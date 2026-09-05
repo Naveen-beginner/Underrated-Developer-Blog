@@ -1,0 +1,110 @@
+.navbar {
+    top: 0;
+    left: 0;
+    position: fixed;
+    padding: 20px 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+    background-color: transparent;
+    backdrop-filter: blur(50px);
+    z-index: 1000;
+}
+
+.navbar.scrolled {
+    box-shadow: 0 2px 5px rgba(125, 125, 125, 0.1);
+}
+
+nav .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+nav .logo span {
+    color: rgb(173, 165, 179);
+    font-size: 1.8rem;
+}
+
+nav .logo h1 {
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: #baa6a6;
+}
+
+.navbar .right {
+    display: flex;
+    align-items: center;
+}
+
+.navbar .right a {
+    text-decoration: none;
+    color: #444;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px 16px;
+    margin-right: 20px;
+    border-radius: 36px;
+    transition: background-color 300ms ease;
+}
+
+.navbar .right a:hover {
+    background-color: hsla(0, 23%, 76%, 0.158);
+    color: darkorchid;
+}
+
+.navbar .right a.active {
+    color: blue;
+}
+
+.navbar .right .search {
+    border-radius: 50%;
+    padding: 10px;
+    cursor: pointer;
+    margin-right: 20px;
+}
+
+.navbar .right .search:hover {
+    background-color: hsla(0, 23%, 76%, 0.158);
+}
+
+.navbar .right button {
+    border-radius: 36px;
+    border: none;
+    outline: none;
+    background-color: rgb(142, 17, 231);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    color: white;
+    cursor: pointer;
+    letter-spacing: 0.7px;
+    font-weight: 500;
+}
+
+.navbar .right button:hover {
+    background-color: hsla(251, 100%, 56%, 0.893);
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        padding: 14px 20px;
+        background-color: white;
+        backdrop-filter: blur(15px);
+    }
+
+    .navbar .right a {
+        display: none;
+    }
+
+    .menu {
+        display: inline;
+    }
+}

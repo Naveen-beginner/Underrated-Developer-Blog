@@ -1,0 +1,32 @@
+.offer-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 16px;
+    background-color: rgb(142, 17, 231);
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    z-index: 1000;
+}
+
+.offer-banner span {
+    font-size: 20px;
+}
+
+.offer-banner.scrolled {
+    top: -50px;
+}
+
+@media (max-width: 500px) {
+    .offer-banner {
+        padding: 12px;
+        font-size: 12px;
+    }
+}

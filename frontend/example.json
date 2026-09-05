@@ -1,0 +1,125 @@
+{
+    "title": "BUILDING THE - ABANDONED IDE",
+    "author": "Santhosh",
+    "publishedAt": "30th August 2026",
+    "shortDescription": "A journey through building a lightweight Flutter-based IDE for Windows.",
+    "sections": [
+        {
+            "title": "How the Idea Started",
+            "blocks": [
+                {
+                    "type": "paragraph",
+                    "data": {
+                        "content": "The idea behind THE - ABANDONED IDE started with a simple question: what if an IDE could understand the project instead of simply displaying files and running commands?"
+                    }
+                },
+                {
+                    "type": "paragraph",
+                    "data": {
+                        "content": "I wanted to experiment with building a lightweight desktop development environment using Flutter and Dart while keeping the interface focused entirely on the developer."
+                    }
+                },
+                {
+                    "type": "list",
+                    "data": {
+                        "ordered": false,
+                        "items": [
+                            "A lightweight Windows desktop application",
+                            "A built-in project explorer",
+                            "A code editor",
+                            "A built-in terminal",
+                            "AI-powered development features"
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "title": "Building the First Version",
+            "blocks": [
+                {
+                    "type": "paragraph",
+                    "data": {
+                        "content": "The first version was intentionally simple. I started with the project explorer, file creation, file editing, and a built-in terminal."
+                    }
+                },
+                {
+                    "type": "paragraph",
+                    "data": {
+                        "content": "Getting the filesystem interaction working correctly was one of the first interesting challenges. The IDE needed to understand folders, nested files, newly created files, and changes made outside the application."
+                    }
+                },
+                {
+                    "type": "list",
+                    "data": {
+                        "ordered": true,
+                        "items": [
+                            "Open the project directory",
+                            "Read files and folders",
+                            "Create new files",
+                            "Create new folders",
+                            "Save modified files",
+                            "Refresh the project explorer"
+                        ]
+                    }
+                },
+                {
+                    "type": "paragraph",
+                    "data": {
+                        "content": "Once those fundamentals were working, the editor started feeling like an actual development environment rather than just another Flutter interface."
+                    }
+                }
+            ]
+        },
+        {
+            "title": "Where the AI Comes In",
+            "blocks": [
+                {
+                    "type": "paragraph",
+                    "data": {
+                        "content": "The next stage is where the project becomes much more interesting. Instead of treating AI as a simple chatbot, I want it to understand the structure of the project and work with the developer's files and tools."
+                    }
+                },
+                {
+                    "type": "paragraph",
+                    "data": {
+                        "content": "The goal is to eventually connect the IDE with an AI agent capable of analysing project files, understanding dependencies, generating code, and interacting with the development environment."
+                    }
+                },
+                {
+                    "type": "list",
+                    "data": {
+                        "ordered": false,
+                        "items": [
+                            "Analyse project files",
+                            "Understand project structure",
+                            "Understand dependencies",
+                            "Generate code",
+                            "Interact with development tools"
+                        ]
+                    }
+                },
+                {
+                    "type": "paragraph",
+                    "data": {
+                        "content": "This is still an evolving experiment, but the foundation is now in place to build something much more ambitious."
+                    }
+                }
+            ]
+        }
+    ],
+    "dyks": [
+        {
+            "badge": "Flutter Fact",
+            "number": 1,
+            "title": "Flutter can target Windows",
+            "description": "Flutter is not limited to mobile applications. It can also be used to build native Windows desktop applications."
+        },
+        {
+            "badge": "Did You Know?",
+            "number": 2,
+            "title": "Dart is the language behind Flutter",
+            "description": "Flutter applications are primarily written using Dart, which provides the language features used to build Flutter interfaces and application logic."
+        }
+    ]
+}
