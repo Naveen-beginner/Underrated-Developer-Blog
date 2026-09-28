@@ -44,16 +44,16 @@
     justify-content: center;
     padding: 18px;
     border-radius: var(--radius-lg);
-    background: var(--card-bg);
+    background: #ffffff !important;
     border: 1px solid var(--border-base);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
     transition: transform var(--transition), border-color var(--transition);
     flex-shrink: 0;
 }
 
-.hero-logo-card:hover {
-    border-color: var(--border-dark);
-    transform: translateY(-2px);
+[data-theme="dark"] .hero-logo-card {
+    background: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.2);
 }
 
 .hero-official-logo {
@@ -455,12 +455,12 @@
     }
 
     .hero-official-logo {
-        width: 84px;
-        height: 84px;
+        width: 100px;
+        height: 100px;
     }
 
     .hero-logo-card {
-        padding: 12px;
+        padding: 14px;
     }
 
     .showcase-grid {
@@ -480,16 +480,18 @@
 
 @media (max-width: 600px) {
     .home-hero {
-        padding: 40px 0 30px;
+        padding: 36px 0 28px;
     }
 
     .hero-quote-title {
-        font-size: 32px;
+        font-size: clamp(28px, 7.5vw, 40px);
         letter-spacing: -1px;
+        line-height: 1.15;
     }
 
     .hero-intro {
         font-size: 15px;
+        line-height: 1.65;
     }
 
     .hero-actions-row {
@@ -502,7 +504,7 @@
     }
 
     .featured-card {
-        padding: 22px 18px;
+        padding: 20px 16px;
     }
 
     .featured-title {
@@ -514,11 +516,30 @@
     }
 
     .filter-bar-clean {
-        gap: 6px;
+        gap: 8px;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 8px;
+        scrollbar-width: none;
+    }
+
+    .filter-bar-clean::-webkit-scrollbar {
+        display: none;
     }
 
     .filter-btn-clean {
-        font-size: 12px;
-        padding: 5px 10px;
+        font-size: 12.5px;
+        padding: 6px 12px;
+        flex-shrink: 0;
+    }
+
+    .clean-search-box {
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .journal-entry-row {
+        padding: 16px 14px;
     }
 }

@@ -108,6 +108,8 @@ body {
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    width: 100%;
     transition: background-color var(--transition), color var(--transition);
 }
 
@@ -265,6 +267,6 @@ pre {
 
 @media (max-width: 640px) {
     .container {
-        padding-inline: 18px;
+        padding-inline: 16px;
     }
 }

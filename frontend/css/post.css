@@ -477,14 +477,26 @@
     }
 
     .article-headline {
-        font-size: 27px;
+        font-size: clamp(25px, 6.5vw, 32px);
         letter-spacing: -0.8px;
+        line-height: 1.22;
     }
 
     .article-author-row {
         flex-direction: column;
         align-items: flex-start;
         gap: 12px;
+    }
+
+    .code-frame pre {
+        font-size: 12.5px !important;
+        padding: 12px 14px !important;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .prose-callout {
+        padding: 14px 16px;
+        margin: 20px 0;
     }
 
     .share-cluster {
