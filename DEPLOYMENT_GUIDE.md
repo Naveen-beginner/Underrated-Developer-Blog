@@ -42,11 +42,19 @@ git push origin main
 > [!NOTE]
 > Cloudflare Pages will automatically detect `functions/api/[[route]].js` and host your backend API directly on `https://underrateddeveloper.com/api/...` with zero configuration!
 
-### Step 3: Link Custom Domain (`underrateddeveloper.com`)
+### Step 3: Link Custom Domain (`underrateddev.com` / `underrateddeveloper.com`)
 1. In your Cloudflare Pages project, go to the **Custom domains** tab.
 2. Click **Set up a custom domain**.
-3. Enter `underrateddeveloper.com` (and optionally `www.underrateddeveloper.com`).
-4. Since your domain is already on Cloudflare DNS, Cloudflare will automatically activate SSL and route traffic within 60 seconds!
+3. Enter your domain name and follow the verification prompt.
+
+### Step 4: Set SSL/TLS Encryption Mode to "Full" (CRITICAL)
+If you ever see `ERR_TOO_MANY_REDIRECTS`, it is caused by Cloudflare's default SSL mode:
+1. In Cloudflare Dashboard, select your domain.
+2. Go to **SSL/TLS** in the left navigation sidebar.
+3. Change the encryption mode from **Flexible** to **Full** (or **Full (Strict)**).
+
+> [!WARNING]
+> Never leave Cloudflare SSL on "Flexible" with Cloudflare Pages! Under "Flexible", Cloudflare communicates with Cloudflare Pages over plain HTTP (port 80), but Cloudflare Pages automatically forces HTTPS (port 443), creating an infinite loop (`ERR_TOO_MANY_REDIRECTS`). Switching to **Full** or **Full (Strict)** resolves this immediately.
 
 ---
 
