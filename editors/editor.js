@@ -1,8 +1,15 @@
 // ==========================================================================
 // UNDERRATED DEVELOPER - STUDIO AUTHOR RUNTIME
+// Self-contained Private Studio for Team 4FrndTech (Naveen & Santhosh Paul)
 // ==========================================================================
 
-import { API_BASE, saveLocalDraftPost } from '../frontend/js/api.js';
+import { API_BASE, saveLocalDraftPost, pushPostToBackend, getFounderSession, clearFounderSession } from './api.js';
+
+// Founder Guard: Verify author authentication before loading studio
+const founderSession = getFounderSession();
+if (!founderSession.isAuthenticated) {
+    window.location.replace('author_login.html');
+}
 
 let postData = {
     _id: 'draft_' + Date.now(),
@@ -11,8 +18,8 @@ let postData = {
     tags: ["Flutter", "Dart", "Desktop", "Windows", "FFI", "GDE Aspirant"],
     shortDescription: "A technical architectural deep-dive into building high-performance Windows desktop applications with Flutter and compiled C++ runtimes.",
     author: {
-        name: "Naveen Chandra Kowshik",
-        username: "Naveen-beginner"
+        name: founderSession.founder?.name || "Naveen Chandra Kowshik",
+        username: founderSession.founder?.username || "Naveen-beginner"
     },
     sections: [
         {
@@ -84,13 +91,65 @@ function initEditor() {
         }
     }
 
+    // Founder UI & Session controls
+    const activeFounderSpan = document.getElementById("active-founder-name");
+    if (activeFounderSpan && founderSession.founder) {
+        activeFounderSpan.textContent = `${founderSession.founder.name.split(' ')[0]} (Founder)`;
+    }
+
+    const logoutBtn = document.getElementById("btn-logout");
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", () => {
+            if (confirm("Log out of CMS Studio?")) {
+                clearFounderSession();
+                window.location.href = "author_login.html";
+            }
+        });
+    }
+
+    const liveBlogLink = document.getElementById("link-public-blog");
+    if (liveBlogLink && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+        liveBlogLink.href = '../frontend/blog.html';
+    }
+
     // Populate meta fields
     postTitleInput.value = postData.title || "";
     postDescInput.value = postData.shortDescription || "";
     postLabelInput.value = postData.label || "Flutter & Dart";
     postTagsInput.value = Array.isArray(postData.tags) ? postData.tags.join(", ") : "";
-    postAuthorInput.value = postData.author?.name || "Naveen Chandra Kowshik";
     postSlugInput.value = postData.slug || "";
+
+    // Author selector (Team 4FrndTech dual founders)
+    const authorSelect = document.getElementById("post-author-select");
+    const currentAuthorName = postData.author?.name || founderSession.founder?.name || "Naveen Chandra Kowshik";
+    postAuthorInput.value = currentAuthorName;
+
+    if (authorSelect) {
+        if (currentAuthorName.includes("Santhosh")) {
+            authorSelect.value = "Santhosh Paul";
+        } else if (currentAuthorName.includes("Naveen")) {
+            authorSelect.value = "Naveen Chandra Kowshik";
+        } else {
+            authorSelect.value = "custom";
+            postAuthorInput.style.display = "block";
+        }
+
+        authorSelect.addEventListener("change", () => {
+            if (authorSelect.value === "custom") {
+                postAuthorInput.style.display = "block";
+                postAuthorInput.focus();
+            } else {
+                postAuthorInput.style.display = "none";
+                postAuthorInput.value = authorSelect.value;
+                const opt = authorSelect.options[authorSelect.selectedIndex];
+                postData.author = {
+                    name: authorSelect.value,
+                    username: opt.getAttribute("data-username") || "underrated-founder"
+                };
+                scheduleAutosave();
+            }
+        });
+    }
 
     // Input listeners
     postTitleInput.addEventListener("input", () => { postData.title = postTitleInput.value; updateStats(); scheduleAutosave(); });
@@ -629,24 +688,22 @@ document.getElementById("btn-publish-post").addEventListener("click", async () =
     // 1. Save locally so it appears in index.html & blog.html immediately
     saveLocalDraftPost(postData);
 
-    // 2. Push to API if available
-    const token = localStorage.getItem("token");
-    if (token) {
-        try {
-            await fetch(`${API_BASE}/create/post`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-                body: JSON.stringify(postData)
-            });
-        } catch (e) {
-            console.warn("Backend push note:", e);
-        }
+    // 2. Push to Cloudflare / Remote Backend API
+    const pushResult = await pushPostToBackend(postData);
+    if (pushResult.success) {
+        showToast("Published to Cloudflare Live Blog!");
+    } else {
+        showToast("Saved locally (Offline/Draft ready)");
     }
 
-    showToast("Post published!");
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const liveUrl = isLocal
+        ? `../frontend/post.html?slug=${postData.slug || postData._id}`
+        : `https://underrateddeveloper.com/post.html?slug=${postData.slug || postData._id}`;
+
     setTimeout(() => {
-        window.location.href = `../frontend/post.html?slug=${postData.slug || postData._id}`;
-    }, 1000);
+        window.location.href = liveUrl;
+    }, 1200);
 });
 
 initEditor();

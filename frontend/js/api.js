@@ -3,7 +3,7 @@
 
 const DEFAULT_API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     ? 'http://localhost:5500/api/my'
-    : 'https://api.underrateddeveloper.com/api/my';
+    : (window.location.origin.includes('underrateddeveloper.com') ? '/api/my' : 'https://underrateddeveloper.com/api/my');
 
 export const API_BASE = localStorage.getItem('UD_API_URL') || DEFAULT_API_BASE;
 

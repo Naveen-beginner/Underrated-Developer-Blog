@@ -7,10 +7,10 @@
     <title>CMS Studio | Underrated Developer</title>
 
     <!-- Favicon (TUD Mark) -->
-    <link rel="icon" type="image/png" sizes="32x32" href="../frontend/assets/favicons/authors-og-image.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="../frontend/assets/favicons/authors-og-image.png">
-    <link rel="shortcut icon" href="../frontend/assets/favicons/favicon-16x16.ico">
-    <link rel="apple-touch-icon" href="../frontend/assets/favicons/authors-og-image.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/authors-og-image.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/authors-og-image.png">
+    <link rel="shortcut icon" href="assets/favicon-16x16.ico">
+    <link rel="apple-touch-icon" href="assets/authors-og-image.png">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -747,17 +747,22 @@
     <!-- Top Action Bar -->
     <header>
         <div class="header-left">
-            <a href="../frontend/blog.html" class="back-link">
-                <span class="material-symbols-outlined" style="font-size: 16px;">arrow_back</span>
-                <span>Blog Archive</span>
+            <a href="https://underrateddeveloper.com/blog.html" target="_blank" rel="noopener" class="back-link" id="link-public-blog">
+                <span class="material-symbols-outlined" style="font-size: 16px;">arrow_outward</span>
+                <span>Live Blog</span>
             </a>
             <div class="studio-title">
                 <span>Underrated Studio</span>
-                <span style="font-size: 11px; color: var(--text-muted); font-weight: 500;">(Author Engine)</span>
+                <span style="font-size: 11px; color: var(--text-muted); font-weight: 500;">(Team 4FrndTech Private CMS)</span>
             </div>
         </div>
 
         <div class="header-right">
+            <div class="founder-badge" id="founder-badge" style="display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; color:var(--text-secondary); background:var(--bg-elevated); padding:5px 12px; border-radius:20px; border:1px solid var(--border-base);">
+                <span class="material-symbols-outlined" style="font-size:15px; color:var(--accent-blue);">verified_user</span>
+                <span id="active-founder-name">Naveen (Founder)</span>
+            </div>
+
             <div class="mode-toggle">
                 <button class="toggle-btn active" id="btn-mode-editor">Editor</button>
                 <button class="toggle-btn" id="btn-mode-preview">Preview</button>
@@ -766,6 +771,9 @@
             <button class="btn-action" id="btn-export-json" title="Export as JSON for backup">JSON</button>
             <button class="btn-action" id="btn-save-draft" title="Save draft locally">Save</button>
             <button class="btn-action publish-btn" id="btn-publish-post">Publish</button>
+            <button class="btn-action" id="btn-logout" title="Sign out" style="padding:6px 10px;">
+                <span class="material-symbols-outlined" style="font-size:16px;">logout</span>
+            </button>
         </div>
     </header>
 
@@ -809,8 +817,13 @@
 
                 <div class="meta-row">
                     <div class="meta-group">
-                        <label class="meta-label">Author Name</label>
-                        <input type="text" class="meta-input" id="post-author" value="Naveen Chandra Kowshik">
+                        <label class="meta-label">Author (Team 4FrndTech)</label>
+                        <select class="meta-select" id="post-author-select">
+                            <option value="Naveen Chandra Kowshik" data-username="Naveen-beginner">Naveen Chandra Kowshik (Founder & Lead Engineer)</option>
+                            <option value="Santhosh Paul" data-username="Santhosh-Paul">Santhosh Paul (Founder & Software Developer)</option>
+                            <option value="custom">Custom Author Name...</option>
+                        </select>
+                        <input type="text" class="meta-input" id="post-author" value="Naveen Chandra Kowshik" style="display: none; margin-top: 6px;">
                     </div>
 
                     <div class="meta-group">
