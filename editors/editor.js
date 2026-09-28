@@ -3,7 +3,7 @@
 // Self-contained Private Studio for Team 4FrndTech (Naveen & Santhosh Paul)
 // ==========================================================================
 
-import { API_BASE, saveLocalDraftPost, pushPostToBackend, getFounderSession, clearFounderSession } from './api.js';
+import { API_BASE, saveLocalDraftPost, pushPostToBackend, updatePostOnBackend, deletePostFromBackend, getFounderSession, clearFounderSession } from './api.js';
 
 // Founder Guard: Verify author authentication before loading studio
 const founderSession = getFounderSession();
@@ -80,14 +80,69 @@ const btnModePreview = document.getElementById("btn-mode-preview");
 const toast = document.getElementById("toast");
 const toastMsg = document.getElementById("toast-msg");
 
-function initEditor() {
-    const saved = localStorage.getItem("UD_CURRENT_DRAFT");
-    if (saved) {
+function loadPostIntoEditor(post) {
+    postData = post;
+    postTitleInput.value = postData.title || "";
+    postDescInput.value = postData.shortDescription || "";
+    postLabelInput.value = postData.label || "Flutter & Dart";
+    postTagsInput.value = Array.isArray(postData.tags) ? postData.tags.join(", ") : "";
+    postSlugInput.value = postData.slug || "";
+
+    const authorSelect = document.getElementById("post-author-select");
+    const currentAuthorName = postData.author?.name || founderSession.founder?.name || "Naveen Chandra Kowshik";
+    postAuthorInput.value = currentAuthorName;
+
+    if (authorSelect) {
+        if (currentAuthorName.includes("Santhosh")) {
+            authorSelect.value = "Santhosh Paul";
+        } else if (currentAuthorName.includes("Naveen")) {
+            authorSelect.value = "Naveen Chandra Kowshik";
+        } else {
+            authorSelect.value = "custom";
+            postAuthorInput.style.display = "block";
+        }
+    }
+
+    const deleteBtn = document.getElementById("btn-delete-post");
+    if (deleteBtn) {
+        deleteBtn.style.display = (postData._id && !postData._id.startsWith("draft_")) ? "inline-flex" : "none";
+    }
+
+    renderSections();
+    updateStats();
+}
+
+async function initEditor() {
+    // Check URL parameters for ?id= or ?slug= to edit existing article
+    const urlParams = new URLSearchParams(window.location.search);
+    const editParam = urlParams.get('id') || urlParams.get('slug');
+    let loadedFromApi = false;
+
+    if (editParam) {
         try {
-            const parsed = JSON.parse(saved);
-            if (parsed.title) postData = parsed;
+            const res = await fetch(`${API_BASE}/post/${encodeURIComponent(editParam)}`);
+            if (res.ok) {
+                const json = await res.json();
+                if (json.data) {
+                    loadPostIntoEditor(json.data);
+                    loadedFromApi = true;
+                    showToast(`Loaded article: ${json.data.title}`);
+                }
+            }
         } catch (e) {
-            console.warn("Could not load stored draft", e);
+            console.warn("Could not fetch remote post, checking local:", e);
+        }
+    }
+
+    if (!loadedFromApi) {
+        const saved = localStorage.getItem("UD_CURRENT_DRAFT");
+        if (saved) {
+            try {
+                const parsed = JSON.parse(saved);
+                if (parsed.title) postData = parsed;
+            } catch (e) {
+                console.warn("Could not load stored draft", e);
+            }
         }
     }
 
@@ -672,7 +727,138 @@ document.getElementById("btn-export-json").addEventListener("click", () => {
     showToast("Exported as JSON");
 });
 
-// Publish
+// New Post
+document.getElementById("btn-new-post")?.addEventListener("click", () => {
+    if (confirm("Start a clean new draft? Any unsaved edits will be cleared.")) {
+        localStorage.removeItem("UD_CURRENT_DRAFT");
+        window.history.replaceState({}, document.title, window.location.pathname);
+        loadPostIntoEditor({
+            _id: 'draft_' + Date.now(),
+            title: "",
+            label: "Flutter & Dart",
+            tags: ["Flutter", "Dart"],
+            shortDescription: "",
+            author: {
+                name: founderSession.founder?.name || "Naveen Chandra Kowshik",
+                username: founderSession.founder?.username || "Naveen-beginner"
+            },
+            sections: [
+                {
+                    title: "Overview",
+                    blocks: [{ type: "paragraph", data: { content: "" } }]
+                }
+            ],
+            published: true,
+            publishedAt: new Date().toISOString()
+        });
+        showToast("New article draft created");
+    }
+});
+
+// Articles Browser Modal
+const articlesModal = document.getElementById("articles-modal");
+const articlesList = document.getElementById("articles-list");
+const btnCloseModal = document.getElementById("btn-close-modal");
+
+btnCloseModal?.addEventListener("click", () => {
+    if (articlesModal) articlesModal.style.display = "none";
+});
+
+document.getElementById("btn-open-articles")?.addEventListener("click", async () => {
+    if (!articlesModal || !articlesList) return;
+    articlesModal.style.display = "flex";
+    articlesList.innerHTML = `<div style="color:var(--text-muted); font-size:13px;">Fetching live articles...</div>`;
+
+    try {
+        let posts = [];
+        try {
+            const res = await fetch(`${API_BASE}/all/posts`);
+            if (res.ok) {
+                const json = await res.json();
+                if (Array.isArray(json.data)) posts = json.data;
+            }
+        } catch (e) {
+            console.warn("API fetch error:", e);
+        }
+
+        if (posts.length === 0) {
+            const local = JSON.parse(localStorage.getItem("UD_LOCAL_POSTS") || "[]");
+            posts = local;
+        }
+
+        if (posts.length === 0) {
+            articlesList.innerHTML = `<div style="color:var(--text-muted); font-size:13px;">No published articles found.</div>`;
+            return;
+        }
+
+        articlesList.innerHTML = posts.map(p => `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 14px; background:var(--bg-subtle); border:1px solid var(--border-base); border-radius:8px;">
+                <div style="flex:1; margin-right:12px;">
+                    <div style="font-weight:700; color:var(--text-primary); font-size:14px;">${p.title}</div>
+                    <div style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">
+                        <span>By ${p.author?.name || 'Founder'}</span> • <span>${p.label}</span>
+                    </div>
+                </div>
+                <div style="display:flex; gap:8px;">
+                    <button class="btn-action load-post-btn" data-id="${p._id}" style="padding:4px 10px; font-size:11px;">Edit</button>
+                    <button class="btn-action del-post-btn" data-id="${p._id}" style="padding:4px 10px; font-size:11px; color:var(--danger); border-color:rgba(239,68,68,0.3);">Del</button>
+                </div>
+            </div>
+        `).join("");
+
+        // Attach edit listeners
+        articlesList.querySelectorAll(".load-post-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const id = btn.getAttribute("data-id");
+                const target = posts.find(p => p._id === id);
+                if (target) {
+                    loadPostIntoEditor(target);
+                    articlesModal.style.display = "none";
+                    showToast(`Loaded: ${target.title}`);
+                }
+            });
+        });
+
+        // Attach delete listeners
+        articlesList.querySelectorAll(".del-post-btn").forEach(btn => {
+            btn.addEventListener("click", async () => {
+                const id = btn.getAttribute("data-id");
+                const target = posts.find(p => p._id === id);
+                if (confirm(`Permanently delete "${target?.title || 'article'}"?`)) {
+                    await deletePostFromBackend(id);
+                    showToast("Article deleted");
+                    btn.closest("div[style*='display:flex']").remove();
+                    if (postData._id === id) {
+                        localStorage.removeItem("UD_CURRENT_DRAFT");
+                        initEditor();
+                    }
+                }
+            });
+        });
+
+    } catch (e) {
+        articlesList.innerHTML = `<div style="color:var(--danger); font-size:13px;">Error loading articles: ${e.message}</div>`;
+    }
+});
+
+// Delete Post button (in header)
+document.getElementById("btn-delete-post")?.addEventListener("click", async () => {
+    if (!postData._id || postData._id.startsWith("draft_")) return;
+    if (confirm(`Permanently delete "${postData.title}" from the blog?`)) {
+        const res = await deletePostFromBackend(postData._id);
+        if (res.success) {
+            showToast("Article deleted from live blog!");
+        } else {
+            showToast("Deleted locally");
+        }
+        localStorage.removeItem("UD_CURRENT_DRAFT");
+        setTimeout(() => {
+            window.location.href = "editor.html";
+        }, 1000);
+    }
+});
+
+// Publish / Update
 document.getElementById("btn-publish-post").addEventListener("click", async () => {
     if (!postData.title || !postData.title.trim()) {
         showToast("Please provide an article title");
@@ -683,15 +869,23 @@ document.getElementById("btn-publish-post").addEventListener("click", async () =
         postData.slug = postData.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
     }
     postData.published = true;
-    postData.publishedAt = new Date().toISOString();
+    postData.publishedAt = postData.publishedAt || new Date().toISOString();
 
     // 1. Save locally so it appears in index.html & blog.html immediately
     saveLocalDraftPost(postData);
 
-    // 2. Push to Cloudflare / Remote Backend API
-    const pushResult = await pushPostToBackend(postData);
-    if (pushResult.success) {
-        showToast("Published to Cloudflare Live Blog!");
+    // 2. Push to Cloudflare / Remote Backend API (Create vs Update)
+    let pushResult = null;
+    const isExisting = postData._id && !postData._id.startsWith("draft_");
+
+    if (isExisting) {
+        pushResult = await updatePostOnBackend(postData._id, postData);
+    } else {
+        pushResult = await pushPostToBackend(postData);
+    }
+
+    if (pushResult && pushResult.success) {
+        showToast(isExisting ? "Article updated on Live Blog!" : "Published to Cloudflare Live Blog!");
     } else {
         showToast("Saved locally (Offline/Draft ready)");
     }

@@ -589,45 +589,32 @@
             loginButton.innerHTML = `<span>VERIFYING...</span>`;
 
             try {
-                // 1. Try remote API login
+                // Strictly call backend / Cloudflare API for cryptographic authentication
                 const targetEndpoint = `${localStorage.getItem('UD_AUTH_URL') || AUTH_API_BASE}/iamtheadmin`;
-                let token = null;
+                
+                const res = await fetch(targetEndpoint, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password })
+                });
 
-                try {
-                    const res = await fetch(targetEndpoint, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ email, password })
-                    });
-                    if (res.ok) {
-                        const data = await res.json();
-                        token = data.token;
-                    }
-                } catch (netErr) {
-                    console.warn("Backend login connection note:", netErr.message);
+                const data = await res.json().catch(() => ({}));
+
+                if (!res.ok || !data.token) {
+                    throw new Error(data.message || "Invalid founder security credentials. Access denied.");
                 }
 
-                // 2. Founder session fallback
-                // If remote backend is cold or offline, authenticate founders Naveen & Paul
-                if (!token) {
-                    // Check if legitimate founder password or developer passcode
-                    if (password.length >= 4) {
-                        token = `ud_founder_session_${Date.now()}`;
-                    } else {
-                        throw new Error("Invalid founder credentials.");
-                    }
-                }
-
-                setFounderSession(token, selectedFounder);
-                showMessage("Access granted! Opening Studio...", "success");
+                const founder = data.data || selectedFounder;
+                setFounderSession(data.token, founder);
+                showMessage("Founder verified! Opening Studio...", "success");
 
                 setTimeout(() => {
                     window.location.href = "editor.html";
                 }, 600);
 
             } catch (err) {
-                console.error("Login error:", err);
-                showMessage(err.message || "Authentication failed. Check your password.", "error");
+                console.error("Login verification failed:", err);
+                showMessage(err.message || "Authentication failed. Server rejected credentials.", "error");
             } finally {
                 loginButton.disabled = false;
                 loginButton.innerHTML = `<span>OPEN CMS STUDIO</span><span class="material-symbols-outlined" style="font-size: 15px;">arrow_forward</span>`;

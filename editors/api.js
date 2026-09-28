@@ -80,6 +80,64 @@ export async function pushPostToBackend(postData) {
 }
 
 /**
+ * Update an existing post on Cloudflare / Remote Backend API
+ */
+export async function updatePostOnBackend(id, postData) {
+    const token = localStorage.getItem('token') || localStorage.getItem('UD_FOUNDER_TOKEN');
+    if (!token) return { success: false, error: 'No authorization token' };
+
+    try {
+        const res = await fetch(`${API_BASE}/update/post/${encodeURIComponent(id)}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(postData)
+        });
+
+        if (!res.ok) {
+            const errData = await res.json().catch(() => ({}));
+            throw new Error(errData.message || `Server responded with ${res.status}`);
+        }
+
+        const data = await res.json();
+        return { success: true, data };
+    } catch (err) {
+        console.warn('API update notice:', err.message);
+        return { success: false, error: err.message };
+    }
+}
+
+/**
+ * Delete a post from Cloudflare / Remote Backend API
+ */
+export async function deletePostFromBackend(id) {
+    const token = localStorage.getItem('token') || localStorage.getItem('UD_FOUNDER_TOKEN');
+    if (!token) return { success: false, error: 'No authorization token' };
+
+    try {
+        const res = await fetch(`${API_BASE}/delete/post/${encodeURIComponent(id)}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!res.ok) {
+            const errData = await res.json().catch(() => ({}));
+            throw new Error(errData.message || `Server responded with ${res.status}`);
+        }
+
+        const data = await res.json();
+        return { success: true, data };
+    } catch (err) {
+        console.warn('API delete notice:', err.message);
+        return { success: false, error: err.message };
+    }
+}
+
+/**
  * Founder Auth / Session Management
  */
 export function getFounderSession() {

@@ -768,8 +768,11 @@
                 <button class="toggle-btn" id="btn-mode-preview">Preview</button>
             </div>
 
+            <button class="btn-action" id="btn-new-post" title="Start fresh article">+ New</button>
+            <button class="btn-action" id="btn-open-articles" title="Load an existing article">Articles</button>
             <button class="btn-action" id="btn-export-json" title="Export as JSON for backup">JSON</button>
             <button class="btn-action" id="btn-save-draft" title="Save draft locally">Save</button>
+            <button class="btn-action" id="btn-delete-post" title="Delete this article" style="display:none; color:var(--danger); border-color:rgba(239,68,68,0.3);">Delete</button>
             <button class="btn-action publish-btn" id="btn-publish-post">Publish</button>
             <button class="btn-action" id="btn-logout" title="Sign out" style="padding:6px 10px;">
                 <span class="material-symbols-outlined" style="font-size:16px;">logout</span>
@@ -845,6 +848,19 @@
         <!-- Live Preview Mode -->
         <article id="preview-pane"></article>
     </main>
+
+    <!-- Articles Browser Modal -->
+    <div id="articles-modal" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.6); z-index:9999; backdrop-filter:blur(4px); align-items:center; justify-content:center;">
+        <div style="background:var(--bg-page); width:min(680px,94%); max-height:85vh; border-radius:12px; border:1px solid var(--border-base); display:flex; flex-direction:column; overflow:hidden; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);">
+            <div style="padding:16px 20px; border-bottom:1px solid var(--border-base); display:flex; justify-content:space-between; align-items:center;">
+                <h3 style="font-size:16px; font-weight:700; color:var(--text-primary);">Browse & Edit Articles</h3>
+                <button id="btn-close-modal" style="background:none; border:none; cursor:pointer; color:var(--text-muted); font-size:22px; line-height:1;">&times;</button>
+            </div>
+            <div id="articles-list" style="padding:16px 20px; overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:10px;">
+                <div style="color:var(--text-muted); font-size:13px;">Loading articles...</div>
+            </div>
+        </div>
+    </div>
 
     <!-- Clean Toast Feedback -->
     <div class="studio-toast" id="toast">
