@@ -14,7 +14,7 @@ export const login = async (req, res) => {
 
         const cleanEmail = email.trim().toLowerCase();
         const expectedPass = process.env.ADMIN_PASSWORD || '4frndtech@2026';
-        const isFounder = cleanEmail === 'naveen@underrateddeveloper.com' || cleanEmail === 'paul@underrateddeveloper.com';
+        const isFounder = cleanEmail === 'naveen@underrateddev.com' || cleanEmail === 'paul@underrateddev.com' || cleanEmail === 'naveen@underrateddeveloper.com' || cleanEmail === 'paul@underrateddeveloper.com';
 
         if (isFounder && password === expectedPass) {
             const isPaul = cleanEmail.includes('paul');

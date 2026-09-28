@@ -893,7 +893,7 @@ document.getElementById("btn-publish-post").addEventListener("click", async () =
     const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     const liveUrl = isLocal
         ? `../frontend/post.html?slug=${postData.slug || postData._id}`
-        : `https://underrateddeveloper.com/post.html?slug=${postData.slug || postData._id}`;
+        : `https://underrateddev.com/post.html?slug=${postData.slug || postData._id}`;
 
     setTimeout(() => {
         window.location.href = liveUrl;

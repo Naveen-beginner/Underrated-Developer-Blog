@@ -9,7 +9,7 @@ const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hos
 // Cloudflare production API or local server
 const DEFAULT_API_ROOT = IS_LOCAL
     ? 'http://localhost:5500/api'
-    : 'https://underrateddeveloper.com/api';
+    : 'https://underrateddev.com/api';
 
 export const API_BASE = localStorage.getItem('UD_API_URL') || `${DEFAULT_API_ROOT}/my`;
 export const AUTH_API_BASE = localStorage.getItem('UD_AUTH_URL') || `${DEFAULT_API_ROOT}/auth/my`;

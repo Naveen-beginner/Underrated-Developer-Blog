@@ -1,6 +1,6 @@
 # Complete Deployment Blueprint: Cloudflare & Netlify
 
-This guide details the exact architecture and deployment steps for **Underrated Developer Blog** (`underrateddeveloper.com`).
+This guide details the exact architecture and deployment steps for **Underrated Developer Blog** (`https://underrateddev.com/`).
 
 ---
 
@@ -10,8 +10,8 @@ The system is strictly divided into two distinct environments to guarantee secur
 
 | Component | Platform | URL / Domain | Visibility | Purpose |
 | :--- | :--- | :--- | :--- | :--- |
-| **Public Blog (Frontend)** | **Cloudflare Pages** | `underrateddeveloper.com` | **100% Public** | High-performance developer blog, articles, and founder profiles |
-| **Backend API** | **Cloudflare Pages / Functions** | `underrateddeveloper.com/api` | **Edge API** | Edge serverless API routes (`/api/my/*` & `/api/auth/my/*`) |
+| **Public Blog (Frontend)** | **Cloudflare Pages** | `https://underrateddev.com/` | **100% Public** | High-performance developer blog, articles, and founder profiles |
+| **Backend API** | **Cloudflare Pages / Functions** | `https://underrateddev.com/api` | **Edge API** | Edge serverless API routes (`/api/my/*` & `/api/auth/my/*`) |
 | **CMS Studio (Editor)** | **Netlify** | `underrated-studio.netlify.app` | **Strictly Private** | Private authoring studio for **Naveen** & **Santhosh Paul** (Team 4FrndTech) |
 
 ---
@@ -40,12 +40,12 @@ git push origin main
 6. Click **Save and Deploy**.
 
 > [!NOTE]
-> Cloudflare Pages will automatically detect `functions/api/[[route]].js` and host your backend API directly on `https://underrateddeveloper.com/api/...` with zero configuration!
+> Cloudflare Pages will automatically detect `functions/api/[[route]].js` and host your backend API directly on `https://underrateddev.com/api/...` with zero configuration!
 
-### Step 3: Link Custom Domain (`underrateddev.com` / `underrateddeveloper.com`)
+### Step 3: Link Custom Domain (`underrateddev.com`)
 1. In your Cloudflare Pages project, go to the **Custom domains** tab.
 2. Click **Set up a custom domain**.
-3. Enter your domain name and follow the verification prompt.
+3. Enter `underrateddev.com` (and optionally `www.underrateddev.com`).
 
 ### Step 4: Set SSL/TLS Encryption Mode to "Full" (CRITICAL)
 If you ever see `ERR_TOO_MANY_REDIRECTS`, it is caused by Cloudflare's default SSL mode:

@@ -53,9 +53,9 @@ class AppFooter extends HTMLElement {
             <div class="container footer-sub-bar">
                 <span>&copy; ${new Date().getFullYear()} Team 4FrndTech • Naveen &amp; Santhosh Paul. All rights reserved.</span>
                 <div class="footer-sub-links">
-                    <a href="https://underrateddeveloper.com">underrateddeveloper.com</a>
+                    <a href="https://underrateddev.com/">underrateddev.com</a>
                     <span>•</span>
-                    <a href="https://underrateddeveloper.com/sitemap.xml">Sitemap</a>
+                    <a href="https://underrateddev.com/sitemap.xml">Sitemap</a>
                 </div>
             </div>
         </footer>

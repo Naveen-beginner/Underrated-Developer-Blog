@@ -1,6 +1,6 @@
 // ==============================================================================
 // CLOUDFLARE PAGES FUNCTIONS - API ROUTER
-// Edge Serverless API for Underrated Developer Blog (underrateddeveloper.com)
+// Edge Serverless API for Underrated Developer Blog (underrateddev.com)
 // Cryptographically Enforced Founder JWT Authentication (HS256 Web Crypto)
 // ==============================================================================
 
@@ -143,10 +143,10 @@ export async function onRequest(context) {
             const cleanEmail = email.trim().toLowerCase();
 
             // Strict credential verification
-            const isNaveen = cleanEmail === 'naveen@underrateddeveloper.com' || cleanEmail === 'naveen';
-            const isPaul = cleanEmail === 'paul@underrateddeveloper.com' || cleanEmail === 'santhosh' || cleanEmail === 'paul';
+            const isNaveen = cleanEmail === 'naveen@underrateddev.com' || cleanEmail === 'naveen@underrateddeveloper.com' || cleanEmail === 'naveen';
+            const isPaul = cleanEmail === 'paul@underrateddev.com' || cleanEmail === 'paul@underrateddeveloper.com' || cleanEmail === 'santhosh' || cleanEmail === 'paul';
 
-            if (!isNaveen && !isPaul && !cleanEmail.endsWith('@underrateddeveloper.com')) {
+            if (!isNaveen && !isPaul && !cleanEmail.endsWith('@underrateddev.com') && !cleanEmail.endsWith('@underrateddeveloper.com')) {
                 return jsonResponse({ success: false, message: 'Unauthorized: Not a registered founder email' }, 401);
             }
 

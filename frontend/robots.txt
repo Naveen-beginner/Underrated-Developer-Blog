@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /editors/
 
-Sitemap: https://underrateddeveloper.com/sitemap.xml
+Sitemap: https://underrateddev.com/sitemap.xml
