@@ -5,218 +5,190 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Authors — Naveen Kowshik & Santhosh Paul | Underrated Developer</title>
+    <title>Founders — Naveen &amp; Santhosh Paul (Team 4FrndTech) | Underrated Developer</title>
 
     <meta name="description"
-        content="Meet Naveen Kowshik and Santhosh Paul, the authors behind Underrated Developer. Explore their developer work, technical knowledge, projects and ways to connect.">
-
-    <meta name="author" content="Naveen Kowshik, Santhosh Paul">
+        content="Meet Naveen and Santhosh Paul, Founders of Team 4FrndTech and Underrated Developer building cross-platform Flutter applications, Play Store apps, and sharing deep technical insights.">
+    <meta name="author" content="Naveen, Santhosh Paul">
 
     <!-- Search Engine Indexing -->
-    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://underrateddeveloper.com/author.html">
 
-    <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-
-    <!-- Canonical -->
-    <link rel="canonical" href="https://underrateddev.com/authors">
-
-    <!-- Brand & Browser -->
-    <meta name="application-name" content="Underrated Developer">
-
-
-
-    <meta name="color-scheme" content="light">
-
-    <meta name="format-detection" content="telephone=no">
-
-    <!-- Icons -->
+    <!-- Brand & Favicon (TUD Mark) -->
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicons/authors-og-image.png">
     <link rel="icon" type="image/png" sizes="16x16" href="assets/favicons/authors-og-image.png">
+    <link rel="shortcut icon" href="assets/favicons/favicon-16x16.ico">
+    <link rel="apple-touch-icon" href="assets/favicons/authors-og-image.png">
 
     <!-- Open Graph -->
     <meta property="og:type" content="profile">
     <meta property="og:site_name" content="Underrated Developer">
-    <meta property="og:title" content="Naveen Kowshik & Santhosh Paul — Authors | Underrated Developer">
-
+    <meta property="og:title" content="Founders — Naveen &amp; Santhosh Paul | Team 4FrndTech">
     <meta property="og:description"
-        content="Meet the authors behind Underrated Developer and explore their developer work, technical knowledge, projects and ways to connect.">
+        content="The founders behind Underrated Developer &amp; Team 4FrndTech: Naveen (#Naveen) and Santhosh Paul (#Paul).">
+    <meta property="og:url" content="https://underrateddeveloper.com/author.html">
+    <meta property="og:image" content="https://underrateddeveloper.com/assets/favicons/official_logo_branding_transparent.png">
 
-    <meta property="og:url" content="https://underrateddev.com/authors">
-
-    <meta property="og:image" content="https://underrateddev.com/assets/branding.png">
-    <meta property="og:image:alt" content="Naveen Kowshik and Santhosh Paul — Underrated Developer">
-    <meta property="og:image:type" content="image/png">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:locale" content="en_IN">
-
-    <!-- X / Twitter -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Naveen Kowshik & Santhosh Paul — Authors | Underrated Developer">
-    <meta name="twitter:description"
-        content="Meet the authors behind Underrated Developer and explore their developer work, projects and technical knowledge.">
-    <meta name="twitter:image" content="https://underrateddev.com/assets/branding.png">
-    <meta name="twitter:image:alt" content="Naveen Kowshik and Santhosh Paul — Underrated Developer">
-
-    <!-- Performance -->
+    <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <!-- Importing Google material Icons (OUTLINED) -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    <!-- Theme Initialization (Prevents flash) -->
+    <script>
+        (function() {
+            const saved = localStorage.getItem('ud-theme');
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (saved === 'dark' || (!saved && prefersDark)) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
 
-    <!-- Importing stylesheets -->
-    <link rel="stylesheet" href="css/global.css"">
-        <link rel=" stylesheet" href="css/navbar.css">
-    <link rel="stylesheet" href="css/banner.css">
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/navbar.css">
     <link rel="stylesheet" href="css/author.css">
     <link rel="stylesheet" href="css/footer.css">
 
-    <!-- Importing HTML components -->
-    <script type="module" src="js/app.js"></script>
+    <!-- Components -->
+    <script type="module" src="components/navbar.js"></script>
+    <script type="module" src="components/footer.js"></script>
 
-    <!-- Website Structured Data -->
+    <!-- Schema.org JSON-LD -->
     <script type="application/ld+json">
-        {
-            "@context": "https://schema.org",
-            "@type": "WebSite",
-            "name": "Underrated Developer",
-            "url": "https://underrateddev.com/",
-            "description": "A developer-focused website providing practical tutorials, technical guides, projects and resources.",
-            "inLanguage": "en-IN"
-        }
-        </script>
-
-    <!-- Authors Page Structured Data -->
-    <script type="application/ld+json">
-        {
-            "@context": "https://schema.org",
-            "@type": "AboutPage",
-            "name": "Authors — Naveen Kowshik & Santhosh Paul",
-            "description": "Meet the authors behind Underrated Developer and explore their developer work, technical knowledge, projects and ways to connect.",
-            "url": "https://underrateddev.com/authors",
-            "isPartOf": {
-                "@type": "WebSite",
-                "name": "Underrated Developer",
-                "url": "https://underrateddev.com/"
-            },
-            "about": [
-                {
-                    "@type": "Person",
-                    "name": "Naveen Kowshik",
-                    "url": "https://underrateddev.com/authors/naveen-kowshik"
-                },
-                {
-                    "@type": "Person",
-                    "name": "Santhosh Paul",
-                    "url": "https://underrateddev.com/authors/santhosh-paul"
-                }
-            ],
-            "inLanguage": "en-IN"
-        }
-        </script>
-
+    {
+        "@context": "https://schema.org",
+        "@type": "AboutPage",
+        "name": "Founders — Naveen & Santhosh Paul (Team 4FrndTech)",
+        "description": "Meet the founders behind Underrated Developer and Team 4FrndTech.",
+        "url": "https://underrateddeveloper.com/author.html"
+    }
+    </script>
 </head>
 
 <body>
-    <!-- <offer-banner></offer-banner> -->
     <app-navbar></app-navbar>
 
-    <header>
-        <h2 class="out-heading">Authors</h2>
-    </header>
-
-    <main>
-        <div class="author">
-            <div class="image-container">
-                <img src="assets/authors/naveen.png" alt="profile_author_naveen_underrated_developer">
+    <main class="author-page-main">
+        <header class="author-hero">
+            <span class="tag-pill blue" style="margin-bottom: 14px;">Team 4FrndTech</span>
+            <h1>The Founders Behind Underrated Developer &amp; 4FrndTech</h1>
+            <p>
+                Two passionate software developers and founders on a joint mission to build production mobile &amp; desktop software, share uncompromised technical architectures, and contribute to the global Flutter &amp; Dart community.
+            </p>
+            <div class="team-hashes-row">
+                <span class="team-hash">#WeAreUnderratedDevs</span>
+                <span class="team-hash blue">#4FrndTech</span>
+                <span class="team-hash blue">#Naveen</span>
+                <span class="team-hash blue">#Paul</span>
             </div>
-            <div class="about-content">
-                <p>I'm <b>Naveen</b>, a software developer passionate about building modern mobile and web applications.
+        </header>
+
+        <!-- Author 1: Naveen -->
+        <section class="author-card-main" id="author-naveen">
+            <div class="author-img-wrap">
+                <img src="assets/authors/naveen.png" alt="Naveen - Underrated Developer" loading="lazy">
+            </div>
+
+            <div class="author-details">
+                <div class="author-badge-row">
+                    <span class="tag-pill blue">Founder &amp; Lead Engineer</span>
+                    <span class="tag-pill">Team 4FrndTech</span>
+                    <span class="tag-pill">#Naveen</span>
+                    <span class="tag-pill" style="color: var(--accent-emerald);">GDE Aspirant</span>
+                </div>
+
+                <h2>Naveen</h2>
+
+                <p class="author-bio">
+                    I'm <strong>Naveen</strong>, a software developer and founder passionate about building modern mobile, desktop, and web applications. I focus deeply on <strong>Flutter internals, Dart compilation, clean architecture, UI/UX execution</strong>, and high-performance cross-platform software.
                 </p>
 
-                <p>I enjoy working with
-                <ul>
-                    <li>
-                        <span class="material-symbols-outlined">data_array</span>
-                        <p>Flutter</p>
-                    </li>
-                    <li>
-                        <span class="material-symbols-outlined">data_array</span>
-                        <p>Dart</p>
-                    </li>
-                    <li>
-                        <span class="material-symbols-outlined">data_array</span>
-                        <p>Android</p>
-                    </li>
-                    <li>
-                        <span class="material-symbols-outlined">data_array</span>
-                        <p>JavaScript</p>
-                    </li>
-                    <li>
-                        <span class="material-symbols-outlined">data_array</span>
-                        <p>Backend technologies</p>
-                    </li>
-                </ul>
-                <p>While exploring clean architecture, UI/UX, and app performance.</p>
-
-                <p>Through my articles on <b>Underrated Developer</b>, I share practical tutorials, development tips,
-                    app
-                    publishing insights,
-                    and real-world experiences to help developers build better software.</p>
-
-                <a href="mailto:naveen191496@gmail.com" class="connect-button">Let's connect</a>
-            </div>
-        </div>
-
-        <br><br>
-
-        <div class="author">
-            <div class="image-container">
-                <img src="assets/authors/santhosh.jpg" alt="profile_author_santosh_underrated_developer">
-            </div>
-            <div class="about-content">
-                <p>I'm <b>Santosh</b>, a software developer building mobile applications for impact.
+                <p class="author-bio">
+                    Together with Santhosh Paul in <strong>Team 4FrndTech</strong> and through my technical deep-dives on <strong>Underrated Developer</strong>, I share battle-tested architectural guides, desktop engine internals, and real-world lessons from publishing production apps, working steadily toward becoming a <strong>Google Developer Expert (GDE)</strong>.
                 </p>
 
-                <p>I enjoy working with
-                <ul>
+                <ul class="author-credentials-list">
                     <li>
-                        <span class="material-symbols-outlined">data_array</span>
-                        <p>Dart</p>
+                        <i class="fa-solid fa-code"></i>
+                        <span><strong>Specialization:</strong> Flutter, Dart, Desktop runtimes, Isolate architecture, Win32 FFI bindings.</span>
                     </li>
                     <li>
-                        <span class="material-symbols-outlined">data_array</span>
-                        <p>Flutter</p>
-                    </li>
-                    <li>
-                        <span class="material-symbols-outlined">data_array</span>
-                        <p>Android Studio</p>
-                    </li>
-                    <li>
-                        <span class="material-symbols-outlined">data_array</span>
-                        <p>Java & XML</p>
-                    </li>
-                    <li>
-                        <span class="material-symbols-outlined">data_array</span>
-                        <p>Frontend technologies</p>
+                        <i class="fa-brands fa-google-play"></i>
+                        <span><strong>Production Work:</strong> Google Play Developer account, Chrome extensions, and NPM library creator.</span>
                     </li>
                 </ul>
-                <p>While exploring
-                    clean architecture,
-                    UI/UX,
-                    and app performance.</p>
 
-                <p>Through my articles on <b>Underrated Developer</b>, I share practical tutorials, development tips,
-                    app
-                    publishing insights,
-                    and real-world experiences to help developers build better software.</p>
-
-                <a href="mailto:santhoshpaul861@gmail.com" class="connect-button">Let's connect</a>
+                <div class="author-actions-row">
+                    <a href="mailto:naveen191496@gmail.com" class="btn btn-primary">
+                        <span class="material-symbols-outlined" style="font-size: 16px;">mail</span>
+                        <span>Connect with Naveen</span>
+                    </a>
+                    <a href="https://github.com/Naveen-beginner" target="_blank" rel="noopener" class="btn btn-secondary">
+                        <i class="fa-brands fa-github"></i>
+                        <span>GitHub Repos</span>
+                    </a>
+                    <a href="https://www.linkedin.com/in/naveen-chandra-kowshik-31a4b63a3/" target="_blank" rel="noopener" class="btn btn-secondary">
+                        <i class="fa-brands fa-linkedin"></i>
+                        <span>LinkedIn</span>
+                    </a>
+                </div>
             </div>
-        </div>
+        </section>
+
+        <!-- Author 2: Santhosh Paul -->
+        <section class="author-card-main" id="author-paul">
+            <div class="author-img-wrap">
+                <img src="assets/authors/santhosh.jpg" alt="Santhosh Paul - Underrated Developer" loading="lazy">
+            </div>
+
+            <div class="author-details">
+                <div class="author-badge-row">
+                    <span class="tag-pill blue">Founder &amp; Software Developer</span>
+                    <span class="tag-pill">Team 4FrndTech</span>
+                    <span class="tag-pill">#Paul</span>
+                    <span class="tag-pill">Mobile &amp; Systems</span>
+                </div>
+
+                <h2>Santhosh Paul</h2>
+
+                <p class="author-bio">
+                    I'm <strong>Santhosh Paul</strong>, a software developer and founder dedicated to building impactful, user-focused mobile applications. My work centers on <strong>Dart, Flutter, Android Studio, Java/XML</strong>, and frontend systems engineering.
+                </p>
+
+                <p class="author-bio">
+                    Together with Naveen in <strong>Team 4FrndTech</strong> and on <strong>Underrated Developer</strong>, I write practical tutorials, app publishing walkthroughs, and developer tips to help builders create resilient applications.
+                </p>
+
+                <ul class="author-credentials-list">
+                    <li>
+                        <i class="fa-brands fa-android"></i>
+                        <span><strong>Specialization:</strong> Dart, Flutter, Android Studio, Java, App Performance, UI/UX systems.</span>
+                    </li>
+                    <li>
+                        <i class="fa-solid fa-rocket"></i>
+                        <span><strong>Focus:</strong> Production app publishing, store compliance, and real-world developer tools.</span>
+                    </li>
+                </ul>
+
+                <div class="author-actions-row">
+                    <a href="mailto:santhoshpaul861@gmail.com" class="btn btn-primary">
+                        <span class="material-symbols-outlined" style="font-size: 16px;">mail</span>
+                        <span>Connect with Santhosh</span>
+                    </a>
+                    <a href="https://devfrnd.netlify.app" target="_blank" rel="noopener" class="btn btn-secondary">
+                        <i class="fa-solid fa-globe"></i>
+                        <span>Portfolio Website</span>
+                    </a>
+                </div>
+            </div>
+        </section>
     </main>
-
-    <br><br>
 
     <app-footer></app-footer>
 </body>

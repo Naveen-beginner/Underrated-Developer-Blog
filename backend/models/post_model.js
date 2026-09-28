@@ -7,10 +7,27 @@ const PostSchema = new mongoose.Schema({
         trim: true,
     },
 
+    slug: {
+        type: String,
+        trim: true,
+        sparse: true,
+        index: true
+    },
+
     label: {
         type: String,
         required: true,
         trim: true
+    },
+
+    tags: {
+        type: [String],
+        default: []
+    },
+
+    readTime: {
+        type: String,
+        default: '5 min read'
     },
 
     author: {
@@ -35,7 +52,8 @@ const PostSchema = new mongoose.Schema({
         {
             title: {
                 type: String,
-                required: true,
+                required: false,
+                default: '',
                 trim: true
             },
 
@@ -46,8 +64,14 @@ const PostSchema = new mongoose.Schema({
                         required: true,
                         enum: [
                             'heading',
+                            'subheading',
                             'paragraph',
-                            'list'
+                            'list',
+                            'code',
+                            'callout',
+                            'quote',
+                            'divider',
+                            'image'
                         ]
                     },
 
@@ -86,6 +110,11 @@ const PostSchema = new mongoose.Schema({
             }
         }
     ],
+
+    views: {
+        type: Number,
+        default: 0
+    },
 
     published: {
         type: Boolean,

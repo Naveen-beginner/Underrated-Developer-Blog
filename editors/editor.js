@@ -1,376 +1,652 @@
+// ==========================================================================
+// UNDERRATED DEVELOPER - STUDIO AUTHOR RUNTIME
+// ==========================================================================
+
+import { API_BASE, saveLocalDraftPost } from '../frontend/js/api.js';
+
 let postData = {
-    title: "BUILDING THE - ABANDONED IDE",
-    label: "Development",
-    authors: "",
-    shortDescription: "A journey through building a lightweight Flutter-based IDE for Windows.",
-    sections: [],
-    dyks: [],
-    published: false,
-    publishedAt: null
+    _id: 'draft_' + Date.now(),
+    title: "Mastering Flutter Desktop: Isolates, Win32 FFI & Native Performance",
+    label: "Flutter & Dart",
+    tags: ["Flutter", "Dart", "Desktop", "Windows", "FFI", "GDE Aspirant"],
+    shortDescription: "A technical architectural deep-dive into building high-performance Windows desktop applications with Flutter and compiled C++ runtimes.",
+    author: {
+        name: "Naveen Chandra Kowshik",
+        username: "Naveen-beginner"
+    },
+    sections: [
+        {
+            title: "Architectural Foundations of Flutter Desktop",
+            blocks: [
+                {
+                    type: "paragraph",
+                    data: {
+                        content: "When engineering desktop-grade software with Flutter, the traditional mobile mental model fails. Desktop users expect <strong>instant cold startups</strong>, negligible memory footprints, and zero stutter during intense file system I/O."
+                    }
+                },
+                {
+                    type: "callout",
+                    data: {
+                        title: "GDE Pro Tip: Const Canonicalization",
+                        content: "Always use const constructors wherever possible in complex tree structures. The Dart VM canonicalizes these instances at compile time, eliminating unnecessary garbage collector pressure."
+                    }
+                },
+                {
+                    type: "code",
+                    data: {
+                        language: "dart",
+                        filename: "lib/core/isolate_worker.dart",
+                        code: "import 'dart:isolate';\n\nclass DesktopWorker {\n  static Future<T> runInBackground<T, R>(T Function(R) task, R param) async {\n    final port = ReceivePort();\n    await Isolate.spawn(_entryPoint, [port.sendPort, task, param]);\n    return await port.first as T;\n  }\n\n  static void _entryPoint(List<dynamic> args) {\n    final sendPort = args[0] as SendPort;\n    final task = args[1] as Function;\n    final param = args[2];\n    final result = task(param);\n    sendPort.send(result);\n  }\n}"
+                    }
+                },
+                {
+                    type: "list",
+                    data: {
+                        ordered: false,
+                        items: [
+                            "Decouple long-running operations into background isolates.",
+                            "Leverage Win32 C++ APIs via Dart FFI for native OS integration.",
+                            "Use virtualized ListView.builder for memory-efficient list views."
+                        ]
+                    }
+                }
+            ]
+        }
+    ],
+    published: true,
+    publishedAt: new Date().toISOString()
 };
 
-const mainContent = document.getElementById("main-content");
-const dykContainer = document.getElementById("dyk-container");
+// DOM Elements
+const sectionsContainer = document.getElementById("sections-container");
+const postTitleInput = document.getElementById("post-title");
+const postDescInput = document.getElementById("post-description");
+const postLabelInput = document.getElementById("post-label");
+const postTagsInput = document.getElementById("post-tags");
+const postAuthorInput = document.getElementById("post-author");
+const postSlugInput = document.getElementById("post-slug");
+const statsBadge = document.getElementById("stats-badge");
+const editorPane = document.getElementById("editor-pane");
+const previewPane = document.getElementById("preview-pane");
+const btnModeEditor = document.getElementById("btn-mode-editor");
+const btnModePreview = document.getElementById("btn-mode-preview");
+const toast = document.getElementById("toast");
+const toastMsg = document.getElementById("toast-msg");
 
-function render() {
+function initEditor() {
+    const saved = localStorage.getItem("UD_CURRENT_DRAFT");
+    if (saved) {
+        try {
+            const parsed = JSON.parse(saved);
+            if (parsed.title) postData = parsed;
+        } catch (e) {
+            console.warn("Could not load stored draft", e);
+        }
+    }
+
+    // Populate meta fields
+    postTitleInput.value = postData.title || "";
+    postDescInput.value = postData.shortDescription || "";
+    postLabelInput.value = postData.label || "Flutter & Dart";
+    postTagsInput.value = Array.isArray(postData.tags) ? postData.tags.join(", ") : "";
+    postAuthorInput.value = postData.author?.name || "Naveen Chandra Kowshik";
+    postSlugInput.value = postData.slug || "";
+
+    // Input listeners
+    postTitleInput.addEventListener("input", () => { postData.title = postTitleInput.value; updateStats(); scheduleAutosave(); });
+    postDescInput.addEventListener("input", () => { postData.shortDescription = postDescInput.value; updateStats(); scheduleAutosave(); });
+    postLabelInput.addEventListener("change", () => { postData.label = postLabelInput.value; scheduleAutosave(); });
+    postTagsInput.addEventListener("input", () => {
+        postData.tags = postTagsInput.value.split(",").map(t => t.trim()).filter(Boolean);
+        scheduleAutosave();
+    });
+    postAuthorInput.addEventListener("input", () => {
+        if (!postData.author) postData.author = {};
+        postData.author.name = postAuthorInput.value;
+        scheduleAutosave();
+    });
+    postSlugInput.addEventListener("input", () => {
+        postData.slug = postSlugInput.value.trim();
+        scheduleAutosave();
+    });
+
     renderSections();
-    renderDYKs();
+    updateStats();
 }
 
 function renderSections() {
-    mainContent.innerHTML = "";
+    sectionsContainer.innerHTML = "";
 
-    postData.sections.forEach((section, sectionIndex) => {
-        const sectionElement = document.createElement("section");
-        sectionElement.className = "section";
+    postData.sections.forEach((section, sIdx) => {
+        const secUnit = document.createElement("div");
+        secUnit.className = "section-unit";
 
-        const title = document.createElement("h2");
-        title.contentEditable = true;
-        title.textContent = section.title;
+        // Head
+        const head = document.createElement("div");
+        head.className = "section-head";
 
-        title.addEventListener("input", () => {
-            section.title = title.innerText;
+        const titleInput = document.createElement("input");
+        titleInput.className = "section-title-input";
+        titleInput.placeholder = `Section ${sIdx + 1} Heading (H2)...`;
+        titleInput.value = section.title || "";
+        titleInput.addEventListener("input", () => {
+            section.title = titleInput.value;
+            scheduleAutosave();
         });
 
-        sectionElement.appendChild(title);
+        const controls = document.createElement("div");
+        controls.className = "section-controls";
 
-        const content = document.createElement("div");
-        content.className = "section-content";
+        const upBtn = createIconBtn("arrow_upward", "Move Section Up", () => moveSection(sIdx, -1));
+        const downBtn = createIconBtn("arrow_downward", "Move Section Down", () => moveSection(sIdx, 1));
+        const delBtn = createIconBtn("delete", "Delete Section", () => deleteSection(sIdx), true);
 
-        section.blocks.forEach((block, blockIndex) => {
-            addBlockToUI(section, block, blockIndex, content);
+        controls.append(upBtn, downBtn, delBtn);
+        head.append(titleInput, controls);
+        secUnit.appendChild(head);
+
+        // Blocks Box
+        const blocksBox = document.createElement("div");
+        blocksBox.className = "blocks-box";
+
+        section.blocks.forEach((block, bIdx) => {
+            blocksBox.appendChild(renderBlock(section, block, sIdx, bIdx));
         });
 
-        sectionElement.appendChild(content);
+        secUnit.appendChild(blocksBox);
 
-        const toolbar = document.createElement("div");
-        toolbar.className = "section-toolbar";
+        // Quick Insert Menu
+        const insertMenu = document.createElement("div");
+        insertMenu.className = "insert-menu";
 
-        const paragraphButton = document.createElement("button");
-        paragraphButton.textContent = "+ Paragraph";
-        paragraphButton.onclick = () => addParagraph(sectionIndex);
+        const label = document.createElement("span");
+        label.className = "insert-label";
+        label.textContent = "+ Insert:";
 
-        const listButton = document.createElement("button");
-        listButton.textContent = "+ List";
-        listButton.onclick = () => addList(sectionIndex);
+        const addP = createInsertBtn("format_paragraph", "Paragraph", () => addBlock(sIdx, "paragraph"));
+        const addCode = createInsertBtn("code", "Flutter / Dart Code", () => addBlock(sIdx, "code"), true);
+        const addSub = createInsertBtn("title", "Subheading", () => addBlock(sIdx, "subheading"));
+        const addList = createInsertBtn("format_list_bulleted", "List", () => addBlock(sIdx, "list"));
+        const addCallout = createInsertBtn("tips_and_updates", "Pro Tip", () => addBlock(sIdx, "callout"));
+        const addQuote = createInsertBtn("format_quote", "Quote", () => addBlock(sIdx, "quote"));
 
-        const deleteButton = document.createElement("button");
-        deleteButton.textContent = "Delete Section";
-        deleteButton.onclick = () => deleteSection(sectionIndex);
+        insertMenu.append(label, addP, addCode, addSub, addList, addCallout, addQuote);
+        secUnit.appendChild(insertMenu);
 
-        toolbar.append(
-            paragraphButton,
-            listButton,
-            deleteButton
-        );
-
-        sectionElement.appendChild(toolbar);
-        mainContent.appendChild(sectionElement);
+        sectionsContainer.appendChild(secUnit);
     });
 }
 
-function addBlockToUI(section, block, blockIndex, container) {
-    const editorBlock = document.createElement("div");
-    editorBlock.className = "editor-block";
+function renderBlock(section, block, sIdx, bIdx) {
+    const item = document.createElement("div");
+    item.className = "content-block-item";
+
+    const metaRow = document.createElement("div");
+    metaRow.className = "block-meta-row";
+
+    const typeLabel = document.createElement("span");
+    typeLabel.className = "block-type-label";
+    typeLabel.textContent = block.type.toUpperCase();
+
+    const controls = document.createElement("div");
+    controls.className = "section-controls";
+
+    const upBtn = createIconBtn("arrow_upward", "Move Block Up", () => moveBlock(section, bIdx, -1));
+    const downBtn = createIconBtn("arrow_downward", "Move Block Down", () => moveBlock(section, bIdx, 1));
+    const dupBtn = createIconBtn("content_copy", "Duplicate Block", () => duplicateBlock(section, bIdx));
+    const delBtn = createIconBtn("delete", "Delete Block", () => deleteBlock(section, bIdx), true);
+
+    controls.append(upBtn, downBtn, dupBtn, delBtn);
+    metaRow.append(typeLabel, controls);
+    item.appendChild(metaRow);
 
     if (block.type === "paragraph") {
-        const paragraph = document.createElement("p");
-        paragraph.contentEditable = true;
-        paragraph.textContent = block.data.content;
+        const p = document.createElement("div");
+        p.className = "editable-text";
+        p.contentEditable = "true";
+        p.innerHTML = block.data.content || "";
+        p.addEventListener("input", () => {
+            block.data.content = p.innerHTML;
+            updateStats();
+            scheduleAutosave();
+        });
+        item.appendChild(p);
+    } else if (block.type === "subheading") {
+        const sub = document.createElement("input");
+        sub.className = "subheading-field";
+        sub.placeholder = "Subheading (H3)...";
+        sub.value = block.data.content || "";
+        sub.addEventListener("input", () => {
+            block.data.content = sub.value;
+            updateStats();
+            scheduleAutosave();
+        });
+        item.appendChild(sub);
+    } else if (block.type === "code") {
+        const codeBox = document.createElement("div");
+        codeBox.className = "code-box-editor";
 
-        paragraph.addEventListener("input", () => {
-            block.data.content = paragraph.innerText;
+        const bar = document.createElement("div");
+        bar.className = "code-bar";
+
+        const fileInput = document.createElement("input");
+        fileInput.className = "code-file-input";
+        fileInput.placeholder = "lib/main.dart or pubspec.yaml";
+        fileInput.value = block.data.filename || "lib/main.dart";
+        fileInput.addEventListener("input", () => {
+            block.data.filename = fileInput.value;
+            scheduleAutosave();
         });
 
-        editorBlock.appendChild(paragraph);
-    }
-
-    if (block.type === "list") {
-        const list = document.createElement(
-            block.data.ordered ? "ol" : "ul"
-        );
-
-        list.className = "editor-list";
-
-        block.data.items.forEach((item, itemIndex) => {
-            const li = document.createElement("li");
-            li.contentEditable = true;
-            li.textContent = item;
-
-            li.addEventListener("input", () => {
-                block.data.items[itemIndex] = li.innerText;
-            });
-
-            li.addEventListener("keydown", (event) => {
-                if (event.key === "Enter") {
-                    event.preventDefault();
-
-                    block.data.items.splice(
-                        itemIndex + 1,
-                        0,
-                        "New item"
-                    );
-
-                    render();
-                }
-
-                if (
-                    event.key === "Backspace" &&
-                    li.innerText.trim() === "" &&
-                    block.data.items.length > 1
-                ) {
-                    event.preventDefault();
-
-                    block.data.items.splice(itemIndex, 1);
-
-                    render();
-                }
-            });
-
-            list.appendChild(li);
+        const langPicker = document.createElement("select");
+        langPicker.className = "code-lang-picker";
+        ["dart", "yaml", "bash", "json", "javascript", "typescript", "python", "html", "css"].forEach(l => {
+            const opt = document.createElement("option");
+            opt.value = l;
+            opt.textContent = l.toUpperCase();
+            if (block.data.language === l) opt.selected = true;
+            langPicker.appendChild(opt);
+        });
+        langPicker.addEventListener("change", () => {
+            block.data.language = langPicker.value;
+            scheduleAutosave();
         });
 
-        editorBlock.appendChild(list);
+        bar.append(fileInput, langPicker);
+        codeBox.appendChild(bar);
+
+        const textarea = document.createElement("textarea");
+        textarea.className = "code-input-area";
+        textarea.placeholder = "// Write or paste Dart / Flutter code here...";
+        textarea.value = block.data.code || "";
+
+        textarea.addEventListener("keydown", (e) => {
+            if (e.key === "Tab") {
+                e.preventDefault();
+                const start = textarea.selectionStart;
+                const end = textarea.selectionEnd;
+                textarea.value = textarea.value.substring(0, start) + "  " + textarea.value.substring(end);
+                textarea.selectionStart = textarea.selectionEnd = start + 2;
+                block.data.code = textarea.value;
+                scheduleAutosave();
+            }
+        });
+
+        textarea.addEventListener("input", () => {
+            block.data.code = textarea.value;
+            updateStats();
+            scheduleAutosave();
+        });
+
+        codeBox.appendChild(textarea);
+        item.appendChild(codeBox);
+    } else if (block.type === "list") {
+        const listBox = document.createElement("div");
+        listBox.className = "list-items-box";
+
+        if (!Array.isArray(block.data.items) || block.data.items.length === 0) {
+            block.data.items = ["First item"];
+        }
+
+        block.data.items.forEach((it, idx) => {
+            const row = document.createElement("div");
+            row.className = "list-row";
+
+            const bullet = document.createElement("span");
+            bullet.className = "list-marker";
+            bullet.textContent = "•";
+
+            const input = document.createElement("input");
+            input.className = "list-text-input";
+            input.value = it;
+            input.addEventListener("input", () => {
+                block.data.items[idx] = input.value;
+                scheduleAutosave();
+            });
+
+            input.addEventListener("keydown", (e) => {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    block.data.items.splice(idx + 1, 0, "");
+                    renderSections();
+                } else if (e.key === "Backspace" && input.value === "" && block.data.items.length > 1) {
+                    e.preventDefault();
+                    block.data.items.splice(idx, 1);
+                    renderSections();
+                }
+            });
+
+            row.append(bullet, input);
+            listBox.appendChild(row);
+        });
+
+        const addRowBtn = document.createElement("button");
+        addRowBtn.style.cssText = "align-self:flex-start; background:none; border:none; color:var(--accent-blue); font-size:12px; font-weight:600; cursor:pointer; padding:2px 0;";
+        addRowBtn.textContent = "+ Add item";
+        addRowBtn.onclick = () => { block.data.items.push(""); renderSections(); };
+        listBox.appendChild(addRowBtn);
+
+        item.appendChild(listBox);
+    } else if (block.type === "callout") {
+        const callout = document.createElement("div");
+        callout.className = "callout-box-editor";
+
+        const title = document.createElement("input");
+        title.className = "callout-head-input";
+        title.placeholder = "Pro Tip Title...";
+        title.value = block.data.title || "GDE Architecture Tip";
+        title.addEventListener("input", () => { block.data.title = title.value; scheduleAutosave(); });
+
+        const body = document.createElement("textarea");
+        body.className = "callout-body-input";
+        body.placeholder = "Write architectural insight here...";
+        body.value = block.data.content || "";
+        body.addEventListener("input", () => { block.data.content = body.value; scheduleAutosave(); });
+
+        callout.append(title, body);
+        item.appendChild(callout);
+    } else if (block.type === "quote") {
+        const quote = document.createElement("div");
+        quote.className = "quote-box-editor";
+
+        const text = document.createElement("textarea");
+        text.className = "quote-input";
+        text.placeholder = '"Memorable quote or key thesis..."';
+        text.value = block.data.text || "";
+        text.addEventListener("input", () => { block.data.text = text.value; scheduleAutosave(); });
+
+        const cite = document.createElement("input");
+        cite.className = "quote-cite";
+        cite.placeholder = "— Attribution";
+        cite.value = block.data.citation || "";
+        cite.addEventListener("input", () => { block.data.citation = cite.value; scheduleAutosave(); });
+
+        quote.append(text, cite);
+        item.appendChild(quote);
     }
 
-    const toolbar = document.createElement("div");
-    toolbar.className = "block-toolbar";
-
-    const upButton = document.createElement("button");
-    upButton.textContent = "↑";
-    upButton.onclick = () => moveBlock(section, blockIndex, -1);
-
-    const downButton = document.createElement("button");
-    downButton.textContent = "↓";
-    downButton.onclick = () => moveBlock(section, blockIndex, 1);
-
-    const deleteButton = document.createElement("button");
-    deleteButton.textContent = "Delete";
-
-    deleteButton.onclick = () => {
-        section.blocks.splice(blockIndex, 1);
-        render();
-    };
-
-    toolbar.append(
-        upButton,
-        downButton,
-        deleteButton
-    );
-
-    editorBlock.appendChild(toolbar);
-    container.appendChild(editorBlock);
+    return item;
 }
 
-function addSection() {
-    postData.sections.push({
-        title: "New Section",
-        blocks: []
-    });
+// Helpers
+function createIconBtn(icon, title, onClick, isDanger = false) {
+    const btn = document.createElement("button");
+    btn.className = `icon-btn ${isDanger ? "btn-danger" : ""}`;
+    btn.title = title;
+    btn.innerHTML = `<span class="material-symbols-outlined" style="font-size:14px;">${icon}</span>`;
+    btn.onclick = onClick;
+    return btn;
+}
 
-    render();
+function createInsertBtn(icon, label, onClick, isDart = false) {
+    const btn = document.createElement("button");
+    btn.className = `btn-insert ${isDart ? "btn-dart" : ""}`;
+    btn.innerHTML = `<span class="material-symbols-outlined" style="font-size:13px;">${icon}</span> ${label}`;
+    btn.onclick = onClick;
+    return btn;
+}
+
+function moveSection(index, dir) {
+    const target = index + dir;
+    if (target < 0 || target >= postData.sections.length) return;
+    const item = postData.sections.splice(index, 1)[0];
+    postData.sections.splice(target, 0, item);
+    renderSections();
+    scheduleAutosave();
 }
 
 function deleteSection(index) {
-    postData.sections.splice(index, 1);
-    render();
-}
-
-function addParagraph(sectionIndex) {
-    postData.sections[sectionIndex].blocks.push({
-        type: "paragraph",
-        data: {
-            content: "New paragraph text..."
-        }
-    });
-
-    render();
-}
-
-function addList(sectionIndex) {
-    postData.sections[sectionIndex].blocks.push({
-        type: "list",
-        data: {
-            ordered: false,
-            items: ["New item"]
-        }
-    });
-
-    render();
-}
-
-function moveBlock(section, index, direction) {
-    const newIndex = index + direction;
-
-    if (
-        newIndex < 0 ||
-        newIndex >= section.blocks.length
-    ) {
-        return;
+    if (confirm("Delete this section?")) {
+        postData.sections.splice(index, 1);
+        renderSections();
+        scheduleAutosave();
     }
-
-    const block = section.blocks[index];
-
-    section.blocks[index] = section.blocks[newIndex];
-    section.blocks[newIndex] = block;
-
-    render();
 }
 
-function addDYK() {
-    postData.dyks.push({
-        badge: "Flutter Fact",
-        number: postData.dyks.length + 1,
-        title: "New fact",
-        description: "Write your fact here."
-    });
+function addBlock(sectionIdx, type) {
+    const sec = postData.sections[sectionIdx];
+    let newBlock = { type, data: {} };
+    if (type === "paragraph" || type === "subheading") newBlock.data.content = "";
+    else if (type === "code") newBlock.data = { language: "dart", filename: "lib/main.dart", code: "" };
+    else if (type === "list") newBlock.data = { ordered: false, items: [""] };
+    else if (type === "callout") newBlock.data = { title: "GDE Pro Tip", content: "" };
+    else if (type === "quote") newBlock.data = { text: "", citation: "" };
 
-    renderDYKs();
+    sec.blocks.push(newBlock);
+    renderSections();
+    scheduleAutosave();
 }
 
-function renderDYKs() {
-    dykContainer.innerHTML = "";
-
-    postData.dyks.forEach((dyk, index) => {
-        const rightCard = document.createElement("div");
-        rightCard.className = "right-card related-posts dyk";
-
-        const card = document.createElement("div");
-        card.className = "card";
-
-        const heading = document.createElement("h2");
-        heading.className = "out-heading";
-        heading.textContent = "Do you know?";
-
-        const badge = document.createElement("div");
-        badge.className = "badge";
-        badge.contentEditable = true;
-        badge.textContent = dyk.badge;
-
-        badge.addEventListener("input", () => {
-            dyk.badge = badge.innerText;
-        });
-
-        const number = document.createElement("div");
-        number.className = "fact-number";
-        number.textContent = `#${index + 1}`;
-
-        const content = document.createElement("div");
-        content.className = "content";
-
-        const title = document.createElement("h2");
-        title.className = "title";
-        title.contentEditable = true;
-        title.textContent = dyk.title;
-
-        title.addEventListener("input", () => {
-            dyk.title = title.innerText;
-        });
-
-        const description = document.createElement("p");
-        description.className = "description";
-        description.contentEditable = true;
-        description.textContent = dyk.description;
-
-        description.addEventListener("input", () => {
-            dyk.description = description.innerText;
-        });
-
-        content.append(title, description);
-
-        const toolbar = document.createElement("div");
-        toolbar.className = "dyk-toolbar";
-
-        const deleteButton = document.createElement("button");
-        deleteButton.textContent = "Delete";
-
-        deleteButton.onclick = () => {
-            postData.dyks.splice(index, 1);
-
-            postData.dyks.forEach((item, i) => {
-                item.number = i + 1;
-            });
-
-            renderDYKs();
-        };
-
-        toolbar.appendChild(deleteButton);
-
-        card.append(
-            heading,
-            badge,
-            number,
-            content,
-            toolbar
-        );
-
-        rightCard.appendChild(card);
-        dykContainer.appendChild(rightCard);
-    });
+function moveBlock(sec, idx, dir) {
+    const target = idx + dir;
+    if (target < 0 || target >= sec.blocks.length) return;
+    const item = sec.blocks.splice(idx, 1)[0];
+    sec.blocks.splice(target, 0, item);
+    renderSections();
+    scheduleAutosave();
 }
 
-async function savePost() {
-    postData.title =
-        document.getElementById("post-title").innerText.trim();
+function duplicateBlock(sec, idx) {
+    const clone = JSON.parse(JSON.stringify(sec.blocks[idx]));
+    sec.blocks.splice(idx + 1, 0, clone);
+    renderSections();
+    scheduleAutosave();
+}
 
-    postData.shortDescription =
-        document.getElementById("short-description").innerText.trim();
+function deleteBlock(sec, idx) {
+    sec.blocks.splice(idx, 1);
+    renderSections();
+    scheduleAutosave();
+}
 
-    const token = localStorage.getItem("token");
+function updateStats() {
+    let words = (postData.title || "").split(/\s+/).filter(Boolean).length;
+    words += (postData.shortDescription || "").split(/\s+/).filter(Boolean).length;
 
-    if (!token) {
-        alert("You must be logged in to create a post.");
-        return;
-    }
-
-    if (!postData.title) {
-        alert("Post title is required.");
-        return;
-    }
-
-    if (!postData.shortDescription) {
-        alert("Short description is required.");
-        return;
-    }
-
-    if (!postData.label) {
-        alert("Post label is required.");
-        return;
-    }
-
-    try {
-        const response = await fetch(
-            "http://localhost:5500/api/my/create/post",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify(postData)
+    postData.sections.forEach(s => {
+        words += (s.title || "").split(/\s+/).filter(Boolean).length;
+        s.blocks.forEach(b => {
+            if (b.data?.content) words += String(b.data.content).replace(/<[^>]*>/g, "").split(/\s+/).filter(Boolean).length;
+            if (b.data?.code) words += String(b.data.code).split(/\s+/).filter(Boolean).length;
+            if (Array.isArray(b.data?.items)) {
+                b.data.items.forEach(i => words += String(i).split(/\s+/).filter(Boolean).length);
             }
-        );
+        });
+    });
 
-        const result = await response.json();
+    const mins = Math.max(1, Math.ceil(words / 200));
+    postData.readTime = `${mins} min read`;
+    statsBadge.textContent = `${words} words • ${mins} min read`;
+}
 
-        if (!response.ok) {
-            throw new Error(
-                result.message || "Failed to create post."
-            );
+// Inline formatting toolbar
+document.querySelectorAll(".editor-toolbar .tool-btn[data-cmd]").forEach(btn => {
+    btn.addEventListener("click", () => {
+        const cmd = btn.getAttribute("data-cmd");
+        const val = btn.getAttribute("data-val") || null;
+
+        if (cmd === "createLink") {
+            const url = prompt("Enter Link URL (e.g. https://flutter.dev):");
+            if (url) document.execCommand(cmd, false, url);
+        } else if (cmd === "formatBlock" && val === "<code>") {
+            const sel = window.getSelection();
+            if (sel.rangeCount > 0) {
+                const range = sel.getRangeAt(0);
+                const codeNode = document.createElement("code");
+                codeNode.style.background = "#f1f5f9";
+                codeNode.style.padding = "2px 5px";
+                codeNode.style.borderRadius = "3px";
+                codeNode.style.fontFamily = "var(--font-mono)";
+                codeNode.textContent = range.toString();
+                range.deleteContents();
+                range.insertNode(codeNode);
+            }
+        } else {
+            document.execCommand(cmd, false, val);
         }
+    });
+});
 
-        console.log("Post created:", result);
+let autosaveTimer = null;
+function scheduleAutosave() {
+    clearTimeout(autosaveTimer);
+    autosaveTimer = setTimeout(() => {
+        localStorage.setItem("UD_CURRENT_DRAFT", JSON.stringify(postData));
+        showToast("Draft autosaved");
+    }, 2000);
+}
 
-        alert("Post created successfully.");
+function showToast(msg) {
+    toastMsg.textContent = msg;
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 2200);
+}
 
-    } catch (error) {
-        console.error("Save post error:", error);
+// Preview Rendering (Matches Clean White Reading View)
+function renderPreview() {
+    let html = `
+    <div style="max-width: 720px; margin: 0 auto; color: #334155;">
+        <span class="tag-pill blue" style="margin-bottom: 14px;">${postData.label}</span>
+        <h1 style="font-size: 34px; font-weight: 800; color: #0f172a; line-height: 1.2; margin: 12px 0 16px;">
+            ${postData.title}
+        </h1>
+        <div style="background: #f8fafc; border-left: 3px solid #0f172a; padding: 14px 18px; margin-bottom: 30px; font-size: 15px; color: #475569;">
+            ${postData.shortDescription}
+        </div>
+    `;
 
-        alert(
-            error.message ||
-            "Something went wrong while creating the post."
-        );
+    postData.sections.forEach(sec => {
+        html += `<h2 style="font-size: 24px; font-weight: 800; color: #0f172a; margin: 36px 0 14px; border-bottom: 1px solid #f1f5f9; padding-bottom: 6px;">${sec.title}</h2>`;
+
+        sec.blocks.forEach(b => {
+            if (b.type === "paragraph") {
+                html += `<p style="font-size: 16.5px; line-height: 1.8; margin-bottom: 16px;">${b.data.content}</p>`;
+            } else if (b.type === "subheading") {
+                html += `<h3 style="font-size: 18px; font-weight: 700; color: #0f172a; margin: 24px 0 10px;">${b.data.content}</h3>`;
+            } else if (b.type === "code") {
+                html += `
+                <div style="margin: 20px 0; border-radius: 8px; overflow: hidden; background: #0f172a; border: 1px solid #1e293b;">
+                    <div style="padding: 6px 12px; background: #172033; font-size: 11.5px; font-family: var(--font-mono); color: #94a3b8; display:flex; justify-content:space-between;">
+                        <span>${b.data.filename || 'lib/main.dart'}</span>
+                        <span style="color:#38bdf8;">${(b.data.language || 'dart').toUpperCase()}</span>
+                    </div>
+                    <pre style="margin:0; padding:14px; overflow-x:auto;"><code class="language-${b.data.language || 'dart'}">${escapeHtml(b.data.code || '')}</code></pre>
+                </div>
+                `;
+            } else if (b.type === "list") {
+                html += `<ul style="margin: 0 0 16px 20px; line-height: 1.7;">`;
+                (b.data.items || []).forEach(it => { html += `<li>${it}</li>`; });
+                html += `</ul>`;
+            } else if (b.type === "callout") {
+                html += `
+                <div style="background: #f8fafc; border-left: 3px solid #0284c7; padding: 12px 16px; margin: 20px 0; border-radius: 4px;">
+                    <div style="font-weight: 700; color: #0f172a; margin-bottom: 2px;">${b.data.title}</div>
+                    <div style="font-size: 14.5px;">${b.data.content}</div>
+                </div>
+                `;
+            } else if (b.type === "quote") {
+                html += `
+                <blockquote style="border-left: 3px solid #0f172a; background: #f8fafc; padding: 10px 16px; margin: 20px 0; font-style: italic;">
+                    <p style="font-size: 16px; color: #0f172a;">"${b.data.text}"</p>
+                    <cite style="font-size: 12px; color: #64748b; font-style: normal;">— ${b.data.citation}</cite>
+                </blockquote>
+                `;
+            }
+        });
+    });
+
+    html += `</div>`;
+    previewPane.innerHTML = html;
+
+    if (window.Prism) {
+        window.Prism.highlightAllUnder(previewPane);
     }
 }
 
-render();
+function escapeHtml(str) {
+    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+// Mode Toggle
+btnModeEditor.addEventListener("click", () => {
+    btnModeEditor.classList.add("active");
+    btnModePreview.classList.remove("active");
+    editorPane.style.display = "block";
+    previewPane.classList.remove("active");
+});
+
+btnModePreview.addEventListener("click", () => {
+    btnModePreview.classList.add("active");
+    btnModeEditor.classList.remove("active");
+    editorPane.style.display = "none";
+    previewPane.classList.add("active");
+    renderPreview();
+});
+
+// Section Add
+document.getElementById("btn-add-section").addEventListener("click", () => {
+    postData.sections.push({
+        title: "New Section",
+        blocks: [{ type: "paragraph", data: { content: "" } }]
+    });
+    renderSections();
+    scheduleAutosave();
+});
+
+// Save Draft
+document.getElementById("btn-save-draft").addEventListener("click", () => {
+    localStorage.setItem("UD_CURRENT_DRAFT", JSON.stringify(postData));
+    saveLocalDraftPost(postData);
+    showToast("Draft saved successfully");
+});
+
+// Export JSON
+document.getElementById("btn-export-json").addEventListener("click", () => {
+    const jsonStr = JSON.stringify(postData, null, 2);
+    const blob = new Blob([jsonStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${(postData.title || "post").toLowerCase().replace(/[^a-z0-9]+/g, "-")}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast("Exported as JSON");
+});
+
+// Publish
+document.getElementById("btn-publish-post").addEventListener("click", async () => {
+    if (!postData.title || !postData.title.trim()) {
+        showToast("Please provide an article title");
+        return;
+    }
+
+    if (!postData.slug) {
+        postData.slug = postData.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
+    }
+    postData.published = true;
+    postData.publishedAt = new Date().toISOString();
+
+    // 1. Save locally so it appears in index.html & blog.html immediately
+    saveLocalDraftPost(postData);
+
+    // 2. Push to API if available
+    const token = localStorage.getItem("token");
+    if (token) {
+        try {
+            await fetch(`${API_BASE}/create/post`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+                body: JSON.stringify(postData)
+            });
+        } catch (e) {
+            console.warn("Backend push note:", e);
+        }
+    }
+
+    showToast("Post published!");
+    setTimeout(() => {
+        window.location.href = `../frontend/post.html?slug=${postData.slug || postData._id}`;
+    }, 1000);
+});
+
+initEditor();

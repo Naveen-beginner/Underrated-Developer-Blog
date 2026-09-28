@@ -1,110 +1,230 @@
-.navbar {
+/* Clean, Balanced Navbar Styling (White Background, Sharp Slate Borders) */
+
+.navbar-wrapper {
+    position: sticky;
     top: 0;
     left: 0;
-    position: fixed;
-    padding: 20px 50px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     width: 100%;
-    box-sizing: border-box;
-    overflow: hidden;
-    background-color: transparent;
-    backdrop-filter: blur(50px);
     z-index: 1000;
+    background: var(--nav-bg);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border-base);
+    transition: background-color var(--transition), border-color var(--transition);
 }
 
-.navbar.scrolled {
-    box-shadow: 0 2px 5px rgba(125, 125, 125, 0.1);
-}
-
-nav .logo {
+.navbar {
+    max-width: var(--max-w-content);
+    margin: 0 auto;
+    padding: 14px 24px;
     display: flex;
     align-items: center;
-    gap: 10px;
-}
-
-nav .logo span {
-    color: rgb(173, 165, 179);
-    font-size: 1.8rem;
-}
-
-nav .logo h1 {
-    font-size: 1.5rem;
-    font-weight: 500;
-    color: #baa6a6;
-}
-
-.navbar .right {
-    display: flex;
-    align-items: center;
-}
-
-.navbar .right a {
-    text-decoration: none;
-    color: #444;
-    font-size: 14px;
-    font-weight: 600;
-    padding: 10px 16px;
-    margin-right: 20px;
-    border-radius: 36px;
-    transition: background-color 300ms ease;
-}
-
-.navbar .right a:hover {
-    background-color: hsla(0, 23%, 76%, 0.158);
-    color: darkorchid;
-}
-
-.navbar .right a.active {
-    color: blue;
-}
-
-.navbar .right .search {
-    border-radius: 50%;
-    padding: 10px;
-    cursor: pointer;
-    margin-right: 20px;
-}
-
-.navbar .right .search:hover {
-    background-color: hsla(0, 23%, 76%, 0.158);
-}
-
-.navbar .right button {
-    border-radius: 36px;
-    border: none;
-    outline: none;
-    background-color: rgb(142, 17, 231);
-    display: flex;
     justify-content: space-between;
+    gap: 20px;
+}
+
+.nav-brand {
+    display: flex;
     align-items: center;
     gap: 12px;
-    padding: 10px 20px;
-    font-size: 14px;
-    font-weight: 500;
-    color: white;
-    cursor: pointer;
-    letter-spacing: 0.7px;
+    text-decoration: none;
+}
+
+.brand-logo-img {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-sm);
+    object-fit: contain;
+    transition: transform var(--transition);
+}
+
+.nav-brand:hover .brand-logo-img {
+    transform: scale(1.06);
+}
+
+.brand-monogram {
+    width: 34px;
+    height: 34px;
+    border-radius: var(--radius-sm);
+    background: var(--text-primary);
+    color: var(--bg-page);
+    font-weight: 800;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: -0.5px;
+    font-family: var(--font-mono);
+}
+
+.brand-text-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.brand-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.3px;
+    line-height: 1.2;
+}
+
+.brand-sub {
+    font-size: 11px;
+    color: var(--text-muted);
     font-weight: 500;
 }
 
-.navbar .right button:hover {
-    background-color: hsla(251, 100%, 56%, 0.893);
+.nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.nav-item {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    padding: 6px 12px;
+    border-radius: var(--radius-md);
+    transition: all var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.nav-item:hover {
+    color: var(--text-primary);
+    background: var(--bg-subtle);
+}
+
+.nav-item.active {
+    color: var(--text-primary);
+    font-weight: 600;
+    background: var(--bg-elevated);
+}
+
+.nav-cta-editor {
+    background: #0f172a;
+    color: #ffffff !important;
+    font-weight: 600;
+}
+
+.nav-cta-editor:hover {
+    background: #1e293b !important;
+}
+
+.nav-meta-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nav-icon-link {
+    width: 34px;
+    height: 34px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-base);
+    background: var(--card-bg);
+    color: var(--text-secondary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    transition: all var(--transition);
+}
+
+.nav-icon-link:hover {
+    color: var(--text-primary);
+    background: var(--bg-subtle);
+    border-color: var(--border-dark);
+}
+
+/* Theme Toggle Button */
+.theme-toggle-btn {
+    cursor: pointer;
+    border: 1px solid var(--border-base);
+    background: var(--card-bg);
+    color: var(--text-secondary);
+    width: 34px;
+    height: 34px;
+    border-radius: var(--radius-md);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition);
+    padding: 0;
+}
+
+.theme-toggle-btn:hover {
+    color: var(--text-primary);
+    background: var(--bg-subtle);
+    border-color: var(--border-dark);
+}
+
+.theme-icon-sun,
+.theme-icon-moon {
+    font-size: 18px !important;
+    transition: transform var(--transition);
+}
+
+/* Light mode (default): show moon (switch to dark), hide sun */
+html:not([data-theme="dark"]) .theme-icon-sun {
+    display: none !important;
+}
+html:not([data-theme="dark"]) .theme-icon-moon {
+    display: inline-block !important;
+    color: var(--text-secondary);
+}
+
+/* Dark mode: show warm sun (switch to light), hide moon */
+html[data-theme="dark"] .theme-icon-moon {
+    display: none !important;
+}
+html[data-theme="dark"] .theme-icon-sun {
+    display: inline-block !important;
+    color: #f59e0b; /* Amber warm sun */
+}
+
+.nav-mobile-toggle {
+    display: none;
+    width: 34px;
+    height: 34px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-base);
+    background: var(--card-bg);
+    color: var(--text-primary);
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
 }
 
 @media (max-width: 768px) {
-    .navbar {
-        padding: 14px 20px;
-        background-color: white;
-        backdrop-filter: blur(15px);
+    .nav-mobile-toggle {
+        display: flex;
     }
 
-    .navbar .right a {
+    .nav-menu {
         display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: var(--card-bg);
+        border-bottom: 1px solid var(--border-base);
+        flex-direction: column;
+        padding: 16px 24px;
+        gap: 8px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
     }
 
-    .menu {
-        display: inline;
+    .nav-menu.active {
+        display: flex;
+    }
+
+    .nav-item {
+        width: 100%;
+        padding: 10px 14px;
     }
 }

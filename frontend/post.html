@@ -1,69 +1,179 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Flutter for Windows: My First Experience Building a Desktop App</title>
+    <title>Article | Underrated Developer</title>
 
-    <!-- FAVICON -->
+    <meta name="description" id="meta-description" content="Technical article by Naveen Chandra Kowshik on Underrated Developer.">
+    <meta name="author" content="Naveen Chandra Kowshik">
+
+    <!-- SEO -->
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" id="canonical-url" href="https://underrateddeveloper.com/">
+
+    <!-- Favicon (TUD Mark) -->
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicons/authors-og-image.png">
     <link rel="icon" type="image/png" sizes="16x16" href="assets/favicons/authors-og-image.png">
+    <link rel="shortcut icon" href="assets/favicons/favicon-16x16.ico">
+    <link rel="apple-touch-icon" href="assets/favicons/authors-og-image.png">
 
-    <!-- Importing Google material Icons (OUTLINED) -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    <!-- Open Graph -->
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="Underrated Developer">
+    <meta property="og:title" id="og-title" content="Technical Article | Underrated Developer">
+    <meta property="og:description" id="og-description" content="Technical engineering tutorial and architecture guide.">
+    <meta property="og:url" id="og-url" content="https://underrateddeveloper.com/">
+    <meta property="og:image" id="og-image" content="https://underrateddeveloper.com/assets/favicons/official_logo_branding_transparent.png">
 
-    <!-- Font awesome icons cdn -->
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" id="tw-title" content="Technical Article | Underrated Developer">
+    <meta name="twitter:description" id="tw-description" content="Technical engineering tutorial.">
+    <meta name="twitter:image" id="tw-image" content="https://underrateddeveloper.com/assets/branding.png">
+
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <!-- Importing stylesheets -->
+    <!-- Prism Syntax Highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+
+    <!-- Theme Initialization (Prevents flash) -->
+    <script>
+        (function() {
+            const saved = localStorage.getItem('ud-theme');
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (saved === 'dark' || (!saved && prefersDark)) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
+
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="css/global.css">
     <link rel="stylesheet" href="css/navbar.css">
     <link rel="stylesheet" href="css/post.css">
     <link rel="stylesheet" href="css/footer.css">
 
-    <!-- Importing HTML components -->
-    <script type="module" src="js/app.js"></script>
-
+    <script type="module" src="components/navbar.js"></script>
+    <script type="module" src="components/footer.js"></script>
 </head>
 
 <body>
+    <!-- Top Reading Progress Indicator -->
+    <div class="reading-progress-bar" id="reading-progress" aria-hidden="true"></div>
 
     <app-navbar></app-navbar>
 
-    <main>
+    <main class="article-viewport">
+        <!-- Back Navigation -->
+        <a href="blog.html" class="article-nav-back">
+            <span class="material-symbols-outlined" style="font-size: 16px;">arrow_back</span>
+            <span>All Articles</span>
+        </a>
 
-        <div class="blog-post-container">
-
-            <div class="left">
-
-                <h1 class="blog-post-out-heading" id="post-title"></h1>
-
-                <div class="blog-post-time-stamps">
-                    By <span id="post-author"></span>,
-                    <span id="post-date"></span>
+        <article>
+            <!-- Article Header -->
+            <header class="article-header">
+                <div class="article-meta-pills">
+                    <span class="tag-pill blue" id="post-category">Flutter & Dart</span>
+                    <span style="font-size: 12.5px; color: var(--text-muted); font-family: var(--font-mono);" id="post-read-time">5 min read</span>
                 </div>
 
-                <div class="blog-short-description" id="short-description">
-                    <p></p>
+                <h1 class="article-headline" id="post-title">Loading Article...</h1>
+
+                <div class="article-author-row">
+                    <div class="author-left-cluster">
+                        <img src="assets/favicons/authors-og-image.png" alt="Naveen Chandra Kowshik" class="author-avatar-img">
+                        <div class="author-text-stack">
+                            <span class="author-name-title">
+                                <span id="post-author">Naveen Chandra Kowshik</span>
+                                <span class="tag-pill" style="font-size: 10px; padding: 1px 6px;">GDE Aspirant</span>
+                            </span>
+                            <span class="author-byline" id="post-date">Published recently</span>
+                        </div>
+                    </div>
+
+                    <div class="share-cluster">
+                        <button class="share-action-btn" id="btn-copy-link" title="Copy article link" aria-label="Copy link">
+                            <span class="material-symbols-outlined" style="font-size: 16px;">link</span>
+                        </button>
+                        <a href="#" target="_blank" rel="noopener" class="share-action-btn" id="btn-share-twitter" title="Share on X" aria-label="Share on X">
+                            <i class="fa-brands fa-x-twitter"></i>
+                        </a>
+                        <a href="#" target="_blank" rel="noopener" class="share-action-btn" id="btn-share-linkedin" title="Share on LinkedIn" aria-label="Share on LinkedIn">
+                            <i class="fa-brands fa-linkedin-in"></i>
+                        </a>
+                    </div>
                 </div>
 
-                <div class="main-content" id="main-content"></div>
+                <!-- Executive Summary / TL;DR -->
+                <div class="article-summary-box" id="article-summary-box">
+                    <strong>TL;DR / Architectural Summary</strong>
+                    <p id="short-description-text"></p>
+                </div>
+            </header>
 
+            <!-- Dynamic Prose Content -->
+            <div class="article-prose" id="main-content">
+                <div style="padding: 40px 0; text-align: center; color: var(--text-dim);">
+                    Loading deep-dive...
+                </div>
             </div>
 
-            <div class="right" id="dyk-container"></div>
+            <!-- Author Signoff & Links -->
+            <footer class="article-signoff">
+                <div class="signoff-card" id="article-signoff-card">
+                    <img src="assets/authors/naveen.png" alt="Naveen" class="signoff-avatar" id="signoff-avatar">
+                    <div class="signoff-body">
+                        <h3>Naveen Chandra Kowshik</h3>
+                        <p>
+                            Software engineer and GDE Aspirant in Flutter & Dart. Creator of published applications on Google Play, Chrome extensions, and NPM libraries.
+                        </p>
+                        <div class="signoff-links">
+                            <a href="https://github.com/Naveen-beginner" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i> GitHub</a>
+                            <a href="https://play.google.com/store/apps/dev?id=8374043554473360551" target="_blank" rel="noopener"><i class="fa-brands fa-google-play"></i> Play Store Profile</a>
+                            <a href="https://www.linkedin.com/in/naveen-chandra-kowshik-31a4b63a3/" target="_blank" rel="noopener"><i class="fa-brands fa-linkedin"></i> LinkedIn</a>
+                        </div>
+                    </div>
+                </div>
 
-        </div>
-
+                <div class="article-bottom-actions">
+                    <a href="blog.html" class="btn btn-secondary">
+                        <span class="material-symbols-outlined" style="font-size: 16px;">arrow_back</span>
+                        <span>Back to Articles</span>
+                    </a>
+                    <button class="btn btn-primary" id="btn-share-bottom">
+                        <span class="material-symbols-outlined" style="font-size: 16px;">share</span>
+                        <span>Share Article</span>
+                    </button>
+                </div>
+            </footer>
+        </article>
     </main>
 
     <app-footer></app-footer>
-</body>
 
-<!-- Access post details -->
-<script type="module" src="js/post.js" defer></script>
+    <!-- Feedback Toast -->
+    <div class="clean-toast" id="post-toast">
+        <span class="material-symbols-outlined" style="font-size: 16px;">check</span>
+        <span id="toast-text">Link copied to clipboard!</span>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-dart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+    <script type="module" src="js/post.js"></script>
+</body>
 
 </html>

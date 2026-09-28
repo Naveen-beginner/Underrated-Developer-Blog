@@ -5,186 +5,106 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Developer Blog — Flutter, Dart, Web Development & Programming | Underrated Developer</title>
+    <title>The Engineering Archive | Underrated Developer</title>
 
     <meta name="description"
-        content="Explore practical tutorials, technical guides, real-world projects and programming articles covering Flutter, Dart, web development and modern software development.">
+        content="Technical field notes, Flutter internals, Dart compilation, Play Store releases, and AI architectures by Naveen &amp; Santhosh Paul.">
+    <meta name="author" content="Naveen, Santhosh Paul">
 
-    <meta name="author" content="Underrated Developer">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://underrateddeveloper.com/blog.html">
 
-    <!-- Search Engine Indexing -->
-    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-
-    <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-
-    <!-- Canonical -->
-    <link rel="canonical" href="https://underrateddev.com/blog">
-
-    <!-- Brand & Browser -->
-    <meta name="application-name" content="Underrated Developer">
-
-    <meta name="color-scheme" content="light">
-
-    <!-- Icons -->
+    <!-- Favicon (TUD Mark) -->
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicons/authors-og-image.png">
     <link rel="icon" type="image/png" sizes="16x16" href="assets/favicons/authors-og-image.png">
+    <link rel="shortcut icon" href="assets/favicons/favicon-16x16.ico">
+    <link rel="apple-touch-icon" href="assets/favicons/authors-og-image.png">
 
     <!-- Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Underrated Developer">
+    <meta property="og:title" content="The Engineering Archive | Underrated Developer">
+    <meta property="og:description" content="Technical field notes, Flutter internals, and Play Store releases.">
+    <meta property="og:url" content="https://underrateddeveloper.com/blog.html">
+    <meta property="og:image" content="https://underrateddeveloper.com/assets/favicons/official_logo_branding_transparent.png">
 
-    <meta property="og:title" content="Developer Blog — Flutter, Dart, Web Development & Programming">
-
-    <meta property="og:description"
-        content="Practical tutorials, technical guides, real-world projects and programming articles for modern developers.">
-
-    <meta property="og:url" content="https://underrateddev.com/blog">
-    <meta property="og:image" content="https://underrateddev.com/assets/og-image.png">
-    <meta property="og:image:alt" content="Underrated Developer Developer Blog">
-    <meta property="og:image:type" content="image/png">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-
-    <meta property="og:locale" content="en_IN">
-
-    <!-- X / Twitter -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Developer Blog — Flutter, Dart, Web Development & Programming">
-    <meta name="twitter:description"
-        content="Practical tutorials, technical guides, projects and programming articles for modern developers.">
-    <meta property="og:image" content="https://underrateddev.com/assets/branding.png">
-    <meta name="twitter:image:alt" content="Underrated Developer Developer Blog">
-
-    <!-- Performance -->
+    <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <!-- Importing Google material Icons (OUTLINED) -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    <!-- Theme Initialization (Prevents flash) -->
+    <script>
+        (function() {
+            const saved = localStorage.getItem('ud-theme');
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (saved === 'dark' || (!saved && prefersDark)) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
 
-    <!-- Importing stylesheets -->
-    <link rel="stylesheet" href="css/global.css"">
-    <link rel=" stylesheet" href="css/navbar.css">
-    <link rel="stylesheet" href="css/banner.css">
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/navbar.css">
     <link rel="stylesheet" href="css/home.css">
     <link rel="stylesheet" href="css/footer.css">
 
-    <!-- Importing HTML components -->
-    <script type="module" src="js/app.js"></script>
-
-    <!-- Website Structured Data -->
-    <script type="application/ld+json">
-        {
-            "@context": "https://schema.org",
-            "@type": "WebSite",
-            "name": "Underrated Developer",
-            "url": "https://underrateddev.com/",
-            "description": "A developer-focused website providing practical tutorials, technical guides, projects and resources for Flutter, Dart, web development and programming.",
-            "inLanguage": "en-IN"
-        }
-        </script>
-
-    <!-- Blog Collection Structured Data -->
-    <script type="application/ld+json">
-        {
-            "@context": "https://schema.org",
-            "@type": "CollectionPage",
-            "name": "Developer Blog",
-            "description": "Practical tutorials, technical guides, real-world projects and programming articles covering Flutter, Dart, web development and programming.",
-            "url": "https://underrateddev.com/blog",
-            "isPartOf": {
-                "@type": "WebSite",
-                "name": "Underrated Developer",
-                "url": "https://underrateddev.com/"
-            },
-            "inLanguage": "en-IN"
-        }
-        </script>
-
-
-    <!-- Because of minimal style for blog.html, using inline css -->
-    <style>
-        main {
-            margin-top: 100px;
-        }
-    </style>
-
+    <script type="module" src="components/navbar.js"></script>
+    <script type="module" src="components/footer.js"></script>
 </head>
 
 <body>
-    <!-- <offer-banner></offer-banner> -->
     <app-navbar></app-navbar>
 
-    <main class="container">
-        <h2 class="out-heading">Blog Posts</h2>
-        <!-- Posts from here -->
-        <section class="recent-posts">
-            <!-- Only 2 posts show as recents -->
-            <div class="post-card">
-                <div class="post-contents">
-                    <span class="category-label"></span>
-                    <h2 class="post-title"></h2>
-                    <a class="post-button"></a>
+    <main>
+        <section class="blog-page-hero">
+            <div class="container">
+                <span class="tag-pill blue" style="margin-bottom: 14px;">Articles & Deep Dives</span>
+                <h1 style="font-size: clamp(32px, 4.5vw, 44px); font-weight: 800; color: var(--text-primary); letter-spacing: -1px; margin-bottom: 10px;">
+                    The Engineering Archive
+                </h1>
+                <p style="font-size: 16px; color: var(--text-muted); max-width: 650px; line-height: 1.65;">
+                    Uncompromised architectural writing, compiled Dart benchmarks, Google Play Store compliance guides, and autonomous AI agents.
+                </p>
+
+                <!-- Search Input -->
+                <div class="clean-search-box">
+                    <span class="material-symbols-outlined clean-search-icon">search</span>
+                    <input type="text" id="search-input" class="clean-search-input" placeholder="Search by topic, Dart, Flutter, or keyword..." aria-label="Search articles">
                 </div>
 
-                <div class="image-container">
-                    <img src="" alt="">
+                <!-- Minimalist Category Filter Buttons -->
+                <div class="filter-bar-clean" role="tablist">
+                    <button class="filter-btn-clean active" data-tag="All" role="tab" aria-selected="true">All</button>
+                    <button class="filter-btn-clean" data-tag="Flutter & Dart" role="tab" aria-selected="false">Flutter & Dart</button>
+                    <button class="filter-btn-clean" data-tag="App Publishing" role="tab" aria-selected="false">App Publishing</button>
+                    <button class="filter-btn-clean" data-tag="AI & Agents" role="tab" aria-selected="false">AI & Agents</button>
+                    <button class="filter-btn-clean" data-tag="Web Tech" role="tab" aria-selected="false">Web Tech</button>
+                </div>
+
+                <div style="margin-top: 18px; font-size: 13px; color: var(--text-dim);">
+                    <span id="posts-count-label">Loading archive...</span>
                 </div>
             </div>
-            <!-- <div class="post-card">
-                <div class="post-contents">
-                    <span class="category-label">FLUTTER</span>
-                    <h2 class="post-title">Flutter - Widget Rendering</h2>
-                    <a href="#" class="post-button">Learn Widgets</a>
-                </div>
-                <div class="image-container">
-                    <img src="https://miro.medium.com/1*10RECXGTH5NyaeBg5yD1pw.png" alt="">
-                </div>
-            </div> -->
         </section>
 
-        <!-- <section class="featured-posts">
-            <div class="post-card">
-                <div class="post-contents">
-                    <span class="category-label">DART</span>
-                    <h2 class="post-title">Dart - Object Oriented Programming</h2>
-                    <a href="post.html" class="post-button">Explore Dart basics</a>
-                </div>
-                <div class="image-container">
-                    <img src="https://repository-images.githubusercontent.com/35726310/78196080-8aee-11ea-8736-5d358571e7db"
-                        alt="">
+        <!-- Archive Feed Section -->
+        <section class="journal-section">
+            <div class="container">
+                <div class="journal-feed" id="posts-container">
+                    <!-- Populated dynamically via blog.js -->
                 </div>
             </div>
-        </section> -->
-
-        <!-- Only 2 posts show as recents -->
-        <!-- <section class="recent-posts">
-            <div class="post-card">
-                <div class="post-contents">
-                    <span class="category-label">DART</span>
-                    <h2 class="post-title">Dart - Oops Programming</h2>
-                    <a href="post.html" class="post-button">Explore Dart basics</a>
-                </div>
-                <div class="image-container"><img
-                        src="https://repository-images.githubusercontent.com/35726310/78196080-8aee-11ea-8736-5d358571e7db"
-                        alt="">
-                </div>
-            </div>
-            <div class="post-card">
-                <div class="post-contents">
-                    <span class="category-label">FLUTTER</span>
-                    <h2 class="post-title">Flutter - Widget Rendering</h2>
-                    <a href="#" class="post-button">Learn Widgets</a>
-                </div>
-                <div class="image-container">
-                    <img src="https://miro.medium.com/1*10RECXGTH5NyaeBg5yD1pw.png" alt="">
-                </div>
-            </div>
-        </section> -->
+        </section>
     </main>
 
     <app-footer></app-footer>
-</body>
 
-<script src="./js/blog.js"></script>
+    <script type="module" src="js/blog.js"></script>
+</body>
 
 </html>

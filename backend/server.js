@@ -15,8 +15,8 @@ import postRoutes from './routes/post_routes.js'
 app.use('/api/auth/my', authRoutes)
 app.use('/api/my/', postRoutes)
 
-const PORT = process.env.PORT
-const MONGO_URI = process.env.MONGO_URI
+const PORT = process.env.PORT || 5500
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/blog-underrated'
 
 app.get('/', (req, res) => {
     res.status(200).send('Server lives here')
