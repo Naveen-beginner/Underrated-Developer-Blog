@@ -1,6 +1,8 @@
 name = "underrated-developer-blog"
 compatibility_date = "2026-09-28"
-pages_build_output_dir = "frontend"
+
+[assets]
+directory = "./frontend"
 
 [vars]
 ADMIN_PASSWORD = "underrated2026"
