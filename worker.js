@@ -1,10 +1,11 @@
 // ==============================================================================
-// CLOUDFLARE PAGES FUNCTIONS - API ROUTER (FRONTEND ROOT)
-// Edge Serverless API for Underrated Developer Blog (underrateddev.com)
+// CLOUDFLARE WORKER ROUTER (worker.js)
+// Edge Serverless API + Static Assets Router for Underrated Developer Blog
+// (underrateddev.com)
 // Cryptographically Enforced Founder JWT Authentication (HS256 Web Crypto)
 // ==============================================================================
 
-import defaultPosts from '../../data/posts.json' with { type: 'json' };
+import defaultPosts from './frontend/data/posts.json' with { type: 'json' };
 
 const CORS_HEADERS = {
     'Access-Control-Allow-Origin': '*',
@@ -113,8 +114,7 @@ async function saveStoredPosts(posts, env) {
     }
 }
 
-export async function onRequest(context) {
-    const { request, env } = context;
+async function handleApi(request, env) {
     const url = new URL(request.url);
     const pathname = url.pathname.replace(/\/+$/, ''); // Strip trailing slash
     const secret = (env && (env.JWT_SECRET || env.ADMIN_PASSWORD)) || 'ud_sec_4frndtech_2026';
@@ -322,9 +322,26 @@ export async function onRequest(context) {
         return jsonResponse({ success: true, message: 'Post deleted successfully' });
     }
 
-    // Default 404
+    // Default 404 for unhandled API endpoints
     return jsonResponse({
         success: false,
         message: `Endpoint ${pathname} not found on Cloudflare Edge API`
     }, 404);
 }
+
+export default {
+    async fetch(request, env, ctx) {
+        const url = new URL(request.url);
+        // Intercept API routes
+        if (url.pathname.startsWith('/api/')) {
+            return handleApi(request, env);
+        }
+
+        // Serve static assets via Cloudflare Workers Assets
+        if (env && env.ASSETS && typeof env.ASSETS.fetch === 'function') {
+            return env.ASSETS.fetch(request);
+        }
+
+        return new Response("Asset not found", { status: 404 });
+    }
+};

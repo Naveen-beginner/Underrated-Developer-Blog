@@ -1,5 +1,5 @@
 name = "underrated-developer-blog"
-main = "frontend/_worker.js"
+main = "worker.js"
 compatibility_date = "2026-09-28"
 
 [assets]
