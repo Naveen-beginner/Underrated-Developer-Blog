@@ -1,0 +1,318 @@
+{
+  "success": true,
+  "message": "Posts fetched successfully",
+  "data": [
+    {
+      "_id": "671e9a1c1d84e5b2931a001a",
+      "slug": "building-the-abandoned-ide-flutter-windows",
+      "title": "Building THE - ABANDONED IDE: A Lightweight Desktop IDE with Flutter & Dart",
+      "label": "Flutter & Dart",
+      "tags": [
+        "Flutter",
+        "Dart",
+        "Desktop",
+        "Windows",
+        "GDE Aspirant",
+        "Architecture"
+      ],
+      "readTime": "7 min read",
+      "author": {
+        "name": "Naveen",
+        "username": "Naveen-beginner",
+        "bio": "Founder & Lead Engineer at Team 4FrndTech. Deep dives on Flutter internals, Dart compilation, and Win32 desktop.",
+        "avatar": "assets/authors/naveen.png"
+      },
+      "banner": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1200&auto=format&fit=crop",
+      "shortDescription": "How I architected and built a dedicated, distraction-free desktop IDE for Windows using Flutter, Dart FFI, and custom filesystem listeners to push desktop performance to the limit.",
+      "published": true,
+      "publishedAt": "2026-09-15T10:00:00.000Z",
+      "views": 1420,
+      "sections": [
+        {
+          "title": "The Genesis of THE - ABANDONED IDE",
+          "blocks": [
+            {
+              "type": "paragraph",
+              "data": {
+                "content": "Modern code editors have become astonishingly feature-rich, but often at the cost of hundreds of megabytes of idle memory and high latency during startup. I wanted to answer a foundational engineering question: <strong>Can Flutter on Windows deliver a snappy, native-feeling, production-grade IDE experience</strong> with a memory footprint under 60MB?"
+              }
+            },
+            {
+              "type": "callout",
+              "data": {
+                "type": "tip",
+                "title": "GDE Architecture Insight",
+                "content": "When targeting Flutter Desktop (Windows/macOS/Linux), avoid rebuilding widget subtrees with frequent file system events. Always decouple file I/O into Dart background isolates using compute() or Isolate.spawn() to keep the Impeller/Skia UI thread running at 120 FPS."
+              }
+            },
+            {
+              "type": "paragraph",
+              "data": {
+                "content": "I established five non-negotiable architectural requirements before writing the first line of UI code:"
+              }
+            },
+            {
+              "type": "list",
+              "data": {
+                "ordered": false,
+                "items": [
+                  "Zero Electron overhead: Pure compiled C++ engine runner with Dart ahead-of-time (AOT) compilation.",
+                  "Non-blocking asynchronous file explorer capable of indexing 10,000+ files instantly.",
+                  "High-performance virtualized code editor with monospaced syntax tokenization.",
+                  "Embedded terminal communicating with Windows cmd.exe and PowerShell via Win32 ConPTY API.",
+                  "Deep AI agent integration that understands project syntax trees instead of acting like a basic prompt wrapper."
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "title": "High Performance File Tree & Isolates",
+          "blocks": [
+            {
+              "type": "paragraph",
+              "data": {
+                "content": "One of the earliest bottlenecks was directory tree parsing. If you execute recursive <code>Directory.listSync()</code> on large projects like a Flutter SDK clone or a monorepo with <code>node_modules</code>, the main Dart isolate stutters. The solution is using an isolate-driven directory watcher."
+              }
+            },
+            {
+              "type": "code",
+              "data": {
+                "language": "dart",
+                "filename": "lib/core/file_system/isolate_indexer.dart",
+                "code": "import 'dart:io';\nimport 'dart:isolate';\n\nclass FileSystemIndexer {\n  /// Traverses project directory in a dedicated background isolate\n  static Future<List<ProjectNode>> indexWorkspace(String rootPath) async {\n    final receivePort = ReceivePort();\n    \n    await Isolate.spawn(_backgroundWorker, {\n      'sendPort': receivePort.sendPort,\n      'root': rootPath,\n    });\n\n    final result = await receivePort.first as List<ProjectNode>;\n    return result;\n  }\n\n  static void _backgroundWorker(Map<String, dynamic> params) {\n    final sendPort = params['sendPort'] as SendPort;\n    final rootDir = Directory(params['root'] as String);\n    \n    final nodes = <ProjectNode>[];\n    if (rootDir.existsSync()) {\n      for (final entity in rootDir.listSync(recursive: false, followLinks: false)) {\n        nodes.add(ProjectNode(\n          path: entity.path,\n          name: entity.uri.pathSegments.reversed.skip(1).first,\n          isDirectory: entity is Directory,\n        ));\n      }\n    }\n    \n    sendPort.send(nodes);\n  }\n}"
+              }
+            },
+            {
+              "type": "paragraph",
+              "data": {
+                "content": "By offloading the tree hierarchy assembly to an isolate, the Flutter UI thread never drops a single frame, even while opening massive workspace repositories."
+              }
+            }
+          ]
+        },
+        {
+          "title": "Implementing Dart FFI & Embedded Terminal",
+          "blocks": [
+            {
+              "type": "paragraph",
+              "data": {
+                "content": "For the terminal integration on Windows, we interact directly with the <code>kernel32.dll</code> Pseudo Console (ConPTY) API using <strong>Dart FFI</strong>. This avoids the overhead of spawning headless webviews or sockets."
+              }
+            },
+            {
+              "type": "code",
+              "data": {
+                "language": "dart",
+                "filename": "lib/features/terminal/win32_conpty.dart",
+                "code": "import 'dart:ffi';\nimport 'package:ffi/ffi.dart';\n\n// Win32 ConPTY FFI Binding definition\ntypedef CreatePseudoConsoleC = Int32 Function(\n  COORD size,\n  IntPtr hInput,\n  IntPtr hOutput,\n  Uint32 dwFlags,\n  Pointer<IntPtr> phPC,\n);\n\ntypedef CreatePseudoConsoleDart = int Function(\n  COORD size,\n  int hInput,\n  int hOutput,\n  int dwFlags,\n  Pointer<IntPtr> phPC,\n);\n\nfinal DynamicLibrary kernel32 = DynamicLibrary.open('kernel32.dll');\nfinal CreatePseudoConsoleDart createPseudoConsole = kernel32\n    .lookup<NativeFunction<CreatePseudoConsoleC>>('CreatePseudoConsole')\n    .asFunction();"
+              }
+            },
+            {
+              "type": "callout",
+              "data": {
+                "type": "warning",
+                "title": "Windows FFI Gotcha",
+                "content": "Always remember to free native memory allocated with calloc or malloc using calloc.free(ptr) to prevent insidious unmanaged memory leaks outside the Dart Garbage Collector."
+              }
+            }
+          ]
+        },
+        {
+          "title": "The Road Ahead & Contributions",
+          "blocks": [
+            {
+              "type": "paragraph",
+              "data": {
+                "content": "Building this tool confirmed my conviction: <em>Flutter is ready for world-class, heavyweight desktop applications.</em> As I progress toward the Google Developer Expert (GDE) accreditation in Flutter and Dart, I am open-sourcing the modules and sharing architectural deep-dives with the community."
+              }
+            },
+            {
+              "type": "quote",
+              "data": {
+                "text": "True engineering excellence isn't measured by how many frameworks you consume, but by how deeply you understand the runtime you build upon.",
+                "citation": "Naveen Chandra Kowshik (Underrated Developer)"
+              }
+            }
+          ]
+        }
+      ],
+      "dyks": [
+        {
+          "badge": "Flutter Fact",
+          "number": 1,
+          "title": "AOT Compilation on Windows",
+          "description": "Flutter Windows apps compile Dart code straight to native machine instructions (x64/ARM64) via LLVM, achieving cold startup times under 200ms."
+        },
+        {
+          "badge": "Dart Pro Tip",
+          "number": 2,
+          "title": "Const Canonicalization",
+          "description": "Using 'const' constructor invocations in Flutter allows the Dart VM to canonicalize widget instances in memory, effectively making subtree rebuild comparisons an O(1) pointer check."
+        }
+      ]
+    },
+    {
+      "_id": "671e9a1c1d84e5b2931a002b",
+      "slug": "publishing-flutter-apps-to-google-play-store",
+      "title": "Publishing to Google Play: From Keystore to Production Track Without Mistakes",
+      "label": "App Publishing",
+      "tags": [
+        "Play Store",
+        "Android",
+        "Flutter",
+        "Dev Accounts",
+        "Deployment",
+        "CI/CD"
+      ],
+      "readTime": "8 min read",
+      "author": {
+        "name": "Santhosh Paul",
+        "username": "santhoshpaul",
+        "bio": "Founder & Software Developer at Team 4FrndTech specializing in Dart, Flutter, Android Studio, and production app publishing on Google Play.",
+        "avatar": "assets/authors/santhosh.jpg"
+      },
+      "banner": "https://images.unsplash.com/photo-1607252650355-f7fd0460ccdb?q=80&w=1200&auto=format&fit=crop",
+      "shortDescription": "The definitive step-by-step masterclass on setting up your Google Play Developer Console, creating a secure upload keystore, configuring Gradle, and passing the 14-day closed testing hurdle.",
+      "published": true,
+      "publishedAt": "2026-09-20T14:30:00.000Z",
+      "views": 2180,
+      "sections": [
+        {
+          "title": "Why So Many First-Time Publishers Get Rejected",
+          "blocks": [
+            {
+              "type": "paragraph",
+              "data": {
+                "content": "Google's developer policy updates over the past two years have transformed app publishing. Between the <strong>14-day closed testing requirement with 20 opted-in testers</strong>, mandatory target SDK compliance (Android 14 / 15), and rigorous privacy declaration checks, rushing your upload guarantees a review rejection."
+              }
+            },
+            {
+              "type": "callout",
+              "data": {
+                "type": "tip",
+                "title": "Developer Account Rule",
+                "content": "For personal Google Play accounts registered after November 2023, you MUST run a closed test with at least 20 testers for 14 continuous days before you can even apply for production access."
+              }
+            }
+          ]
+        },
+        {
+          "title": "Generating a Production Upload Keystore Securely",
+          "blocks": [
+            {
+              "type": "paragraph",
+              "data": {
+                "content": "Never generate your release keystore inside the git repository. Use <code>keytool</code> with standard 2048-bit RSA encryption and keep it in a secure location outside version control."
+              }
+            },
+            {
+              "type": "code",
+              "data": {
+                "language": "bash",
+                "filename": "terminal (PowerShell or Bash)",
+                "code": "# Generate release keystore using keytool\nkeytool -genkey -v -keystore ~/upload-keystore.jks \\\n  -storetype JKS -keyalg RSA -keysize 2048 -validity 10000 \\\n  -alias upload"
+              }
+            },
+            {
+              "type": "paragraph",
+              "data": {
+                "content": "Next, reference your keystore via <code>android/key.properties</code> so passwords are not committed to GitHub:"
+              }
+            },
+            {
+              "type": "code",
+              "data": {
+                "language": "yaml",
+                "filename": "android/key.properties",
+                "code": "storePassword=YOUR_SECURE_STORE_PASSWORD\nkeyPassword=YOUR_SECURE_KEY_PASSWORD\nkeyAlias=upload\nstoreFile=C:\\\\Users\\\\Developer\\\\upload-keystore.jks"
+              }
+            }
+          ]
+        },
+        {
+          "title": "Building the Optimized App Bundle (AAB)",
+          "blocks": [
+            {
+              "type": "paragraph",
+              "data": {
+                "content": "Google Play requires the <code>.aab</code> format rather than traditional APKs. This enables Google Play Dynamic Delivery to split your binary into CPU architectures (armeabi-v7a, arm64-v8a, x86_64) and screen density splits, reducing download size by 30-50%."
+              }
+            },
+            {
+              "type": "code",
+              "data": {
+                "language": "bash",
+                "filename": "terminal",
+                "code": "# Clean and build obfuscated, tree-shaken Android App Bundle\nflutter clean\nflutter pub get\nflutter build appbundle --release --obfuscate --split-debug-info=./build/app/outputs/symbols"
+              }
+            }
+          ]
+        }
+      ],
+      "dyks": [
+        {
+          "badge": "Play Policy",
+          "number": 1,
+          "title": "App Signing by Google",
+          "description": "Google Play App Signing securely stores your real app signing key in Google's cloud HSM infrastructure, meaning losing your upload key no longer permanently bricks your app."
+        }
+      ]
+    },
+    {
+      "_id": "671e9a1c1d84e5b2931a003c",
+      "slug": "integrating-ai-agents-with-flutter-and-dart-sdk",
+      "title": "Building Autonomous AI Agents with Flutter & Modern LLM SDKs",
+      "label": "AI & Agents",
+      "tags": [
+        "AI Agents",
+        "Flutter",
+        "Dart SDK",
+        "Gemini",
+        "Autonomous",
+        "Tool Calling"
+      ],
+      "readTime": "6 min read",
+      "author": {
+        "name": "Naveen & Santhosh Paul",
+        "username": "UnderratedDevs",
+        "bio": "Founders of Team 4FrndTech & Underrated Developer exploring autonomous AI agents with Dart SDK.",
+        "avatar": "assets/favicons/authors-og-image.png"
+      },
+      "banner": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200&auto=format&fit=crop",
+      "shortDescription": "How to move beyond simple chat bubbles to build proactive, multi-step autonomous AI agents inside your Flutter applications using structured function calling and client-side tool execution.",
+      "published": true,
+      "publishedAt": "2026-09-25T18:00:00.000Z",
+      "views": 980,
+      "sections": [
+        {
+          "title": "From Chatbot to Autonomous Agent",
+          "blocks": [
+            {
+              "type": "paragraph",
+              "data": {
+                "content": "Most developers implement AI in mobile apps by showing a basic chat interface that displays markdown text from an API call. But true <strong>Agentic AI</strong> allows the model to introspect device capabilities, run local queries, read files, and trigger background tasks on behalf of the user."
+              }
+            },
+            {
+              "type": "code",
+              "data": {
+                "language": "dart",
+                "filename": "lib/services/agent_tool_registry.dart",
+                "code": "import 'dart:convert';\n\nclass AgentTool {\n  final String name;\n  final String description;\n  final Map<String, dynamic> parametersSchema;\n  final Future<String> Function(Map<String, dynamic> args) handler;\n\n  AgentTool({\n    required this.name,\n    required this.description,\n    required this.parametersSchema,\n    required this.handler,\n  });\n}\n\n// Example: Tool that searches local SQLite database\nfinal searchNotesTool = AgentTool(\n  name: 'search_local_notes',\n  description: 'Searches user private notes database by query string',\n  parametersSchema: {\n    'type': 'object',\n    'properties': {\n      'query': {'type': 'string', 'description': 'The keyword to search'},\n    },\n    'required': ['query'],\n  },\n  handler: (args) async {\n    final query = args['query'] as String;\n    final results = await LocalDatabase.instance.searchNotes(query);\n    return jsonEncode(results);\n  },\n);"
+              }
+            }
+          ]
+        }
+      ],
+      "dyks": [
+        {
+          "badge": "Agentic AI",
+          "number": 1,
+          "title": "Function Calling Loop",
+          "description": "An autonomous agent operates on a ReAct (Reason + Act) loop: the LLM emits a tool call, Flutter runs it locally, and feeds the result back until the objective is fulfilled."
+        }
+      ]
+    }
+  ]
+}

@@ -36,11 +36,19 @@ git push origin main
    - **Framework preset**: `None`
    - **Build command**: *(leave blank)*
    - **Build output directory**: `frontend`
-   - **Root directory**: `/` (leave as root so `functions/` is detected)
+   - **Root directory**: `/` (or `frontend` — both are supported with zero-downtime routing)
 6. Click **Save and Deploy**.
 
 > [!NOTE]
-> Cloudflare Pages will automatically detect `functions/api/[[route]].js` and host your backend API directly on `https://underrateddev.com/api/...` with zero configuration!
+> The project uses Cloudflare Pages Advanced Runtime (`frontend/_worker.js`) combined with Pages Functions (`frontend/functions/api/[[route]].js` and `functions/api/[[route]].js`) and static fallback endpoints (`frontend/api/my/all/posts`). The edge API handles `/api/*` requests dynamically and with zero downtime under all Cloudflare Pages build configurations!
+
+### (Alternative) CLI Deployment via Wrangler
+You can also deploy instantly from your terminal using:
+```bash
+npx wrangler deploy
+# OR for Pages:
+npx wrangler pages deploy frontend
+```
 
 ### Step 3: Link Custom Domain (`underrateddev.com`)
 1. In your Cloudflare Pages project, go to the **Custom domains** tab.
