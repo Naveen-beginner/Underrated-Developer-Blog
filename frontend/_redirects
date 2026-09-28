@@ -1,6 +1,0 @@
-# Cloudflare Pages Clean Route Rewrites
-/blog      /blog.html      200
-/post      /post.html      200
-/author    /author.html    200
-/support   /support.html   200
-/posts     /blog.html      301

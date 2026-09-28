@@ -244,7 +244,7 @@ function updateSEO(post) {
     const twDesc = document.getElementById("tw-description");
 
     const desc = post.shortDescription || post.title;
-    const currentUrl = `https://underrateddeveloper.com/post.html?slug=${post.slug || post._id}`;
+    const currentUrl = `${window.location.origin}/post.html?slug=${post.slug || post._id}`;
 
     if (metaDesc) metaDesc.content = desc;
     if (canonical) canonical.href = currentUrl;
