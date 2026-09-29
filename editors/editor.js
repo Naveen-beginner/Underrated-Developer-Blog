@@ -868,36 +868,56 @@ document.getElementById("btn-publish-post").addEventListener("click", async () =
     if (!postData.slug) {
         postData.slug = postData.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
     }
+
+    // Auto-generate shortDescription if omitted
+    if (!postData.shortDescription || !postData.shortDescription.trim()) {
+        const firstBlock = postData.sections?.[0]?.blocks?.[0]?.data?.content;
+        postData.shortDescription = firstBlock 
+            ? String(firstBlock).replace(/<[^>]*>?/gm, '').substring(0, 160) 
+            : postData.title;
+    }
+
     postData.published = true;
     postData.publishedAt = postData.publishedAt || new Date().toISOString();
 
-    // 1. Save locally so it appears in index.html & blog.html immediately
+    // 1. Save locally so it appears in local draft store
     saveLocalDraftPost(postData);
 
-    // 2. Push to Cloudflare / Remote Backend API (Create vs Update)
-    let pushResult = null;
-    const isExisting = postData._id && !postData._id.startsWith("draft_");
+    const publishBtn = document.getElementById("btn-publish-post");
+    const originalText = publishBtn.innerHTML;
+    publishBtn.disabled = true;
+    publishBtn.innerHTML = '<span>Publishing...</span>';
 
-    if (isExisting) {
-        pushResult = await updatePostOnBackend(postData._id, postData);
-    } else {
-        pushResult = await pushPostToBackend(postData);
+    try {
+        // 2. Push to Cloudflare / Remote Backend API (Create vs Update)
+        let pushResult = null;
+        const isExisting = postData._id && !postData._id.startsWith("draft_");
+
+        if (isExisting) {
+            pushResult = await updatePostOnBackend(postData._id, postData);
+        } else {
+            pushResult = await pushPostToBackend(postData);
+        }
+
+        if (pushResult && pushResult.success) {
+            showToast(isExisting ? "Article updated on Live Blog!" : "Published to Cloudflare Live Blog!");
+            const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+            const liveUrl = isLocal
+                ? `../frontend/post.html?slug=${postData.slug || postData._id}`
+                : `https://underrateddev.com/post.html?slug=${postData.slug || postData._id}`;
+
+            setTimeout(() => {
+                window.location.href = liveUrl;
+            }, 1200);
+        } else {
+            const errDetail = pushResult?.error || 'Server error';
+            showToast(`Failed to publish: ${errDetail}`);
+            alert(`Could not publish article to live blog:\n\n${errDetail}\n\nPlease check your internet connection or verify founder session.`);
+        }
+    } finally {
+        publishBtn.disabled = false;
+        publishBtn.innerHTML = originalText;
     }
-
-    if (pushResult && pushResult.success) {
-        showToast(isExisting ? "Article updated on Live Blog!" : "Published to Cloudflare Live Blog!");
-    } else {
-        showToast("Saved locally (Offline/Draft ready)");
-    }
-
-    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    const liveUrl = isLocal
-        ? `../frontend/post.html?slug=${postData.slug || postData._id}`
-        : `https://underrateddev.com/post.html?slug=${postData.slug || postData._id}`;
-
-    setTimeout(() => {
-        window.location.href = liveUrl;
-    }, 1200);
 });
 
 initEditor();

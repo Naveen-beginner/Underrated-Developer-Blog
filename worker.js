@@ -271,20 +271,38 @@ async function handleApi(request, env) {
 
         try {
             const newPost = await request.json();
-            if (!newPost.title || !newPost.shortDescription) {
-                return jsonResponse({ success: false, message: 'Title and shortDescription are required' }, 400);
+            if (!newPost.title || !newPost.title.trim()) {
+                return jsonResponse({ success: false, message: 'Title is required' }, 400);
+            }
+
+            // Auto-generate shortDescription if missing
+            if (!newPost.shortDescription || !newPost.shortDescription.trim()) {
+                const firstBlockText = newPost.sections && newPost.sections[0]?.blocks?.[0]?.data?.content;
+                newPost.shortDescription = firstBlockText 
+                    ? String(firstBlockText).replace(/<[^>]*>?/gm, '').substring(0, 160)
+                    : newPost.title;
+            }
+
+            if (!newPost.label) newPost.label = 'Web Development';
+            if (!newPost.tags || !Array.isArray(newPost.tags) || !newPost.tags.length) {
+                newPost.tags = [newPost.label];
             }
 
             if (!newPost._id) newPost._id = 'post_' + Date.now();
             if (!newPost.slug) newPost.slug = newPost.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
             newPost.published = true;
-            newPost.publishedAt = new Date().toISOString();
+            newPost.publishedAt = newPost.publishedAt || new Date().toISOString();
             if (!newPost.author) {
                 newPost.author = { name: user.name, username: user.username };
             }
 
             const posts = await getStoredPosts(env);
-            posts.unshift(newPost);
+            const existingIdx = posts.findIndex(p => p._id === newPost._id || p.slug === newPost.slug);
+            if (existingIdx >= 0) {
+                posts[existingIdx] = { ...posts[existingIdx], ...newPost };
+            } else {
+                posts.unshift(newPost);
+            }
             await saveStoredPosts(posts, env);
 
             return jsonResponse({
