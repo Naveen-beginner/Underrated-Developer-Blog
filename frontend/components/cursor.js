@@ -1,7 +1,6 @@
 // ==============================================================================
-// AUTHENTIC CANVA-STYLE MULTIPLAYER CURSOR
-// Iconic Canva / Figma collaborative arrow pointer with live interactive tag
-// Pure black & white badge styling without emojis or individual founder tags
+// AUTHENTIC CANVA-STYLE POINTER CURSOR
+// Minimalist, high-precision arrow pointer (No floating label pills)
 // Exclusively activates on desktop pointers (pointer: fine & hover: hover)
 // ==============================================================================
 
@@ -14,9 +13,6 @@
     if (!isDesktopPointer || prefersReducedMotion) return;
 
     if (document.getElementById('canva-cursor-root')) return;
-
-    // Neutral team branding without individual names or emojis
-    const DEFAULT_LABEL = '4FrndTech';
 
     // Create Root Container
     const root = document.createElement('div');
@@ -33,22 +29,7 @@
         </svg>
     `;
 
-    // Attached Canva User Tag Pill (Black background, White text)
-    const tag = document.createElement('div');
-    tag.className = 'canva-cursor-tag';
-
-    const dot = document.createElement('span');
-    dot.className = 'canva-cursor-dot';
-
-    const text = document.createElement('span');
-    text.className = 'canva-cursor-text';
-    text.textContent = DEFAULT_LABEL;
-
-    tag.appendChild(dot);
-    tag.appendChild(text);
-
     root.appendChild(arrowWrap);
-    root.appendChild(tag);
     document.body.appendChild(root);
     document.documentElement.classList.add('canva-cursor-enabled');
 
@@ -95,81 +76,16 @@
         root.classList.remove('is-clicked');
     }, { passive: true });
 
-    // Context-sensitive interactive tag updates (Clean typography, NO emojis, NO individual founder names)
+    // Subtle scale feedback when hovering interactive links & buttons
     document.addEventListener('mouseover', (e) => {
         const target = e.target;
         if (!target || !(target instanceof Element)) return;
 
-        // Interactive UI Element Detection
-        const inputEl = target.closest('input, textarea, [contenteditable="true"]');
-        const copyBtn = target.closest('.copy-btn, [data-action="copy"]');
-        const codeEl = target.closest('pre, code, .code-snippet-box');
-        const cardEl = target.closest('.featured-card, .journal-entry-row, .post-item, .author-card-main');
-        const workEl = target.closest('.work-row-item');
-        const topicChip = target.closest('.topic-chip, .filter-chip');
-        const btnEl = target.closest('button, [role="button"]');
-        const linkEl = target.closest('a');
-
-        if (inputEl) {
+        const isInteractive = target.closest('a, button, input, select, textarea, [role="button"], .topic-chip, .featured-card, .work-row-item, .author-card-main');
+        if (isInteractive) {
             root.classList.add('is-hovering');
-            text.textContent = 'Type Here';
-            dot.style.background = '#38bdf8';
-            dot.style.boxShadow = '0 0 6px #38bdf8';
-        } else if (copyBtn) {
-            root.classList.add('is-hovering');
-            text.textContent = 'Copy Code';
-            dot.style.background = '#22c55e';
-            dot.style.boxShadow = '0 0 6px #22c55e';
-        } else if (codeEl) {
-            root.classList.add('is-hovering');
-            text.textContent = 'Source Code';
-            dot.style.background = '#f59e0b';
-            dot.style.boxShadow = '0 0 6px #f59e0b';
-        } else if (workEl) {
-            root.classList.add('is-hovering');
-            text.textContent = 'Open Project';
-            dot.style.background = '#38bdf8';
-            dot.style.boxShadow = '0 0 6px #38bdf8';
-        } else if (cardEl) {
-            root.classList.add('is-hovering');
-            text.textContent = 'Read Article';
-            dot.style.background = '#22c55e';
-            dot.style.boxShadow = '0 0 6px #22c55e';
-        } else if (topicChip) {
-            root.classList.add('is-hovering');
-            text.textContent = 'Filter Topic';
-            dot.style.background = '#38bdf8';
-            dot.style.boxShadow = '0 0 6px #38bdf8';
-        } else if (btnEl) {
-            root.classList.add('is-hovering');
-            if (btnEl.id === 'theme-toggle-btn' || btnEl.id === 'sidebar-theme-btn') {
-                text.textContent = 'Theme';
-                dot.style.background = '#f59e0b';
-                dot.style.boxShadow = '0 0 6px #f59e0b';
-            } else if (btnEl.id === 'sidebar-close-btn') {
-                text.textContent = 'Close';
-                dot.style.background = '#ef4444';
-                dot.style.boxShadow = '0 0 6px #ef4444';
-            } else {
-                text.textContent = btnEl.getAttribute('aria-label') || 'Action';
-                dot.style.background = '#38bdf8';
-                dot.style.boxShadow = '0 0 6px #38bdf8';
-            }
-        } else if (linkEl) {
-            root.classList.add('is-hovering');
-            if (linkEl.getAttribute('target') === '_blank') {
-                text.textContent = 'Visit Link';
-            } else {
-                text.textContent = 'Explore';
-            }
-            dot.style.background = '#22c55e';
-            dot.style.boxShadow = '0 0 6px #22c55e';
         } else {
-            // Revert smoothly to Team default
             root.classList.remove('is-hovering');
-            text.textContent = DEFAULT_LABEL;
-            dot.style.background = '#22c55e';
-            dot.style.boxShadow = '0 0 6px #22c55e';
         }
     }, { passive: true });
 })();
