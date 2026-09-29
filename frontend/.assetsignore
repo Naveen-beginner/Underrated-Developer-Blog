@@ -1,5 +1,4 @@
 _worker.js
-
-functions
-
-.assetsignore
+_routes.json
+_headers
+_redirects

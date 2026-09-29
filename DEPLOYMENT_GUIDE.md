@@ -18,37 +18,25 @@ The system is strictly divided into two distinct environments to guarantee secur
 
 ## 🚀 Part 1: Deploy Public Blog & Backend on Cloudflare
 
-Cloudflare Pages hosts the public frontend at global edge CDN with zero latency and handles the backend API via serverless Pages Functions (`functions/api/[[route]].js`).
+Cloudflare hosts the public frontend at global edge CDN with zero latency and handles the backend API via Cloudflare Worker runtime (`worker.js` + `wrangler.toml`).
 
-### Step 1: Push Code to GitHub
-```bash
-git add .
-git commit -m "feat: configure cloudflare edge deployment and private netlify cms"
-git push origin main
-```
-
-### Step 2: Create Cloudflare Pages Project
-1. Log in to your [Cloudflare Dashboard](https://dash.cloudflare.com/).
-2. In the sidebar, navigate to **Compute (Workers) > Workers & Pages** (or **Pages**).
-3. Click **Create Application** > **Pages** > **Connect to Git**.
-4. Select your repository `Underrated-Developer-Blog`.
-5. Configure the Build settings:
+### Method A: Automated Cloudflare Dashboard Deploy (Git Connected)
+1. In Cloudflare Dashboard, go to **Compute (Workers) > Workers & Pages**.
+2. Click **Create Application** > **Connect to Git** > select `Underrated-Developer-Blog`.
+3. If setting up as **Pages**:
    - **Framework preset**: `None`
-   - **Build command**: *(leave blank)*
+   - **Build command**: *(leave blank — DO NOT put `npx wrangler deploy` here!)*
    - **Build output directory**: `frontend`
-   - **Root directory**: `/` (or `frontend` — both are supported with zero-downtime routing)
-6. Click **Save and Deploy**.
+4. If setting up as **Workers (Builds)**:
+   - Cloudflare will automatically read [wrangler.toml](file:///C:/Users/KOWSHIK/Music/Underrated-Developer-Blog/wrangler.toml) and execute `npx wrangler deploy` to deploy `worker.js` and serve `./frontend` assets.
 
-> [!NOTE]
-> The project uses Cloudflare Workers runtime (`worker.js` via `wrangler.toml`) combined with Cloudflare Pages Functions (`functions/api/[[route]].js`) and static fallback endpoints (`frontend/api/my/all/posts`). The edge API handles `/api/*` requests dynamically with zero downtime under all Cloudflare deployment configurations!
-
-### (Alternative) CLI Deployment via Wrangler
-You can also deploy instantly from your terminal using:
+### Method B: Terminal Deploy via Wrangler CLI
+Deploy instantly at any time from your local terminal:
 ```bash
 npx wrangler deploy
-# OR for Pages:
-npx wrangler pages deploy frontend
 ```
+This reads `wrangler.toml`, compiles `worker.js`, and uploads `./frontend` static assets with zero errors!
+
 
 ### Step 3: Link Custom Domain (`underrateddev.com`)
 1. In your Cloudflare Pages project, go to the **Custom domains** tab.
