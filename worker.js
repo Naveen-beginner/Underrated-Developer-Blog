@@ -6,6 +6,7 @@
 // ==============================================================================
 
 import defaultPosts from './frontend/data/posts.json' with { type: 'json' };
+import { MongoClient } from 'mongodb';
 
 const CORS_HEADERS = {
     'Access-Control-Allow-Origin': '*',
@@ -89,25 +90,72 @@ function jsonResponse(data, status = 200) {
 }
 
 // In-memory runtime cache for serverless invocation lifecycle
-let memoryPosts = Array.isArray(defaultPosts) ? [...defaultPosts] : [];
+let mongoClient = null;
+
+async function getMongoCollection(env) {
+    const uri = (env && env.MONGO_URI) || 'mongodb+srv://rakurthikowshik_db_user:lYGwM504rBJ2cqw9@cluster0.e7nzofn.mongodb.net/blog-underrated?appName=Cluster0';
+    if (!mongoClient) {
+        mongoClient = new MongoClient(uri, {
+            maxPoolSize: 1,
+            serverSelectionTimeoutMS: 5000,
+            connectTimeoutMS: 5000,
+        });
+        await mongoClient.connect();
+    }
+    const db = mongoClient.db('blog-underrated');
+    return db.collection('posts');
+}
 
 async function getStoredPosts(env) {
+    // 1. Try MongoDB Atlas directly
+    try {
+        const coll = await getMongoCollection(env);
+        const docs = await coll.find({ published: true }).sort({ publishedAt: -1, createdAt: -1 }).toArray();
+        if (Array.isArray(docs) && docs.length > 0) {
+            return docs.map(doc => ({
+                ...doc,
+                _id: doc._id ? doc._id.toString() : doc.slug
+            }));
+        }
+    } catch (err) {
+        console.warn('MongoDB Atlas read fallback:', err.message);
+    }
+
+    // 2. Try Cloudflare KV
     if (env && env.BLOG_KV) {
         try {
             const kvPosts = await env.BLOG_KV.get('ud_published_posts', { type: 'json' });
             if (Array.isArray(kvPosts)) {
-                const seen = new Set(defaultPosts.map(p => p._id));
-                return [...kvPosts.filter(p => !seen.has(p._id)), ...defaultPosts];
+                return kvPosts;
             }
         } catch (e) {
             console.warn('KV read warning:', e);
         }
     }
+
+    // 3. In-memory runtime cache
     return memoryPosts;
 }
 
 async function saveStoredPosts(posts, env) {
     memoryPosts = posts;
+
+    // 1. Try MongoDB Atlas persistence
+    try {
+        const coll = await getMongoCollection(env);
+        for (const post of posts) {
+            const { _id, ...rest } = post;
+            await coll.updateOne(
+                { $or: [{ slug: post.slug }, { _id: String(_id) }] },
+                { $set: { ...rest, slug: post.slug, updatedAt: new Date() } },
+                { upsert: true }
+            );
+        }
+    } catch (err) {
+        console.warn('MongoDB Atlas write fallback:', err.message);
+    }
+
+    // 2. Try Cloudflare KV persistence
     if (env && env.BLOG_KV) {
         try {
             await env.BLOG_KV.put('ud_published_posts', JSON.stringify(posts));
