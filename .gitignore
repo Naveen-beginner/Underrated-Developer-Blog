@@ -1,5 +1,17 @@
-.wrangler/
+# Dependencies
 node_modules/
+**/node_modules/
+
+# Cloudflare Wrangler & bundle artifacts
+.wrangler/
+_worker.bundle/
+
+# Environment configurations
+.env
+*.env
+.env.local
+
+# Operating System files
 .DS_Store
 Thumbs.db
-_worker.bundle
+desktop.ini

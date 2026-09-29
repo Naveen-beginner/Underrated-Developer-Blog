@@ -4,7 +4,14 @@
     "slug": "building-the-abandoned-ide-flutter-windows",
     "title": "Building THE - ABANDONED IDE: A Lightweight Desktop IDE with Flutter & Dart",
     "label": "Flutter & Dart",
-    "tags": ["Flutter", "Dart", "Desktop", "Windows", "GDE Aspirant", "Architecture"],
+    "tags": [
+      "Flutter",
+      "Dart",
+      "Desktop",
+      "Windows",
+      "GDE Aspirant",
+      "Architecture"
+    ],
     "readTime": "7 min read",
     "author": {
       "name": "Naveen",
@@ -147,7 +154,14 @@
     "slug": "publishing-flutter-apps-to-google-play-store",
     "title": "Publishing to Google Play: From Keystore to Production Track Without Mistakes",
     "label": "App Publishing",
-    "tags": ["Play Store", "Android", "Flutter", "Dev Accounts", "Deployment", "CI/CD"],
+    "tags": [
+      "Play Store",
+      "Android",
+      "Flutter",
+      "Dev Accounts",
+      "Deployment",
+      "CI/CD"
+    ],
     "readTime": "8 min read",
     "author": {
       "name": "Santhosh Paul",
@@ -247,7 +261,14 @@
     "slug": "integrating-ai-agents-with-flutter-and-dart-sdk",
     "title": "Building Autonomous AI Agents with Flutter & Modern LLM SDKs",
     "label": "AI & Agents",
-    "tags": ["AI Agents", "Flutter", "Dart SDK", "Gemini", "Autonomous", "Tool Calling"],
+    "tags": [
+      "AI Agents",
+      "Flutter",
+      "Dart SDK",
+      "Gemini",
+      "Autonomous",
+      "Tool Calling"
+    ],
     "readTime": "6 min read",
     "author": {
       "name": "Naveen & Santhosh Paul",

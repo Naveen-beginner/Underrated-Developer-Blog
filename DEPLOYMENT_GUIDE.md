@@ -40,7 +40,7 @@ git push origin main
 6. Click **Save and Deploy**.
 
 > [!NOTE]
-> The project uses Cloudflare Pages Advanced Runtime (`frontend/_worker.js`) combined with Pages Functions (`frontend/functions/api/[[route]].js` and `functions/api/[[route]].js`) and static fallback endpoints (`frontend/api/my/all/posts`). The edge API handles `/api/*` requests dynamically and with zero downtime under all Cloudflare Pages build configurations!
+> The project uses Cloudflare Workers runtime (`worker.js` via `wrangler.toml`) combined with Cloudflare Pages Functions (`functions/api/[[route]].js`) and static fallback endpoints (`frontend/api/my/all/posts`). The edge API handles `/api/*` requests dynamically with zero downtime under all Cloudflare deployment configurations!
 
 ### (Alternative) CLI Deployment via Wrangler
 You can also deploy instantly from your terminal using:
