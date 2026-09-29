@@ -1,20 +1,69 @@
 // ==========================================================================
 // UNDERRATED DEVELOPER - CLEAN EDITORIAL HOME RUNTIME
+// Directly fetches and renders live database posts
 // ==========================================================================
 
 import { fetchAllPosts } from './api.js';
 
 const recentPostsContainer = document.getElementById("recent-posts");
+const featuredPostCard = document.getElementById("featured-post-card");
 
 async function loadHomeContent() {
-    if (!recentPostsContainer) return;
-
     try {
         const posts = await fetchAllPosts();
+        renderFeaturedCard(posts);
         renderJournalEntries(posts);
     } catch (e) {
         console.error("Failed to load journal entries:", e);
+        renderFeaturedCard([]);
+        renderJournalEntries([]);
     }
+}
+
+function renderFeaturedCard(posts) {
+    if (!featuredPostCard) return;
+
+    if (!posts || posts.length === 0) {
+        featuredPostCard.innerHTML = `
+            <div class="featured-tag-row">
+                <span class="tag-pill blue">Spotlight</span>
+            </div>
+            <h2 class="featured-title">
+                No Articles Published Yet
+            </h2>
+            <p class="featured-excerpt">
+                Articles published directly to the database will automatically be featured here.
+            </p>
+        `;
+        return;
+    }
+
+    const featured = posts[0];
+    const postHref = `post.html?slug=${featured.slug || featured._id}`;
+    const authorName = featured.author?.name || (typeof featured.author === 'string' ? featured.author : 'Naveen Chandra Kowshik');
+    const label = featured.label || (Array.isArray(featured.tags) && featured.tags[0]) || 'Featured Article';
+
+    featuredPostCard.innerHTML = `
+        <div class="featured-tag-row">
+            <span class="tag-pill blue">${escapeHtml(label)}</span>
+            <span style="font-size: 12px; color: var(--text-dim); font-family: var(--font-mono);">${escapeHtml(featured.readTime || '5 min read')}</span>
+        </div>
+
+        <h2 class="featured-title">
+            <a href="${postHref}">${escapeHtml(featured.title)}</a>
+        </h2>
+
+        <p class="featured-excerpt">
+            ${escapeHtml(featured.shortDescription || '')}
+        </p>
+
+        <div class="featured-meta-bar">
+            <span>By ${escapeHtml(authorName)}</span>
+            <a href="${postHref}" style="color: var(--text-primary); font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
+                Read Full Post →
+            </a>
+        </div>
+    `;
 }
 
 function renderJournalEntries(posts) {
@@ -22,7 +71,7 @@ function renderJournalEntries(posts) {
     recentPostsContainer.innerHTML = "";
 
     if (!posts || posts.length === 0) {
-        recentPostsContainer.innerHTML = `<p style="padding: 24px 0; color: var(--text-dim); font-size: 14px;">Articles are being prepared.</p>`;
+        recentPostsContainer.innerHTML = `<p style="padding: 24px 0; color: var(--text-dim); font-size: 14px;">Articles are being prepared in the database.</p>`;
         return;
     }
 
@@ -32,7 +81,7 @@ function renderJournalEntries(posts) {
 
         const postHref = `post.html?slug=${post.slug || post._id}`;
         const dateStr = formatDate(post.publishedAt);
-        const label = post.label || "Flutter & Dart";
+        const label = post.label || (Array.isArray(post.tags) && post.tags[0]) || "Article";
 
         row.innerHTML = `
             <div class="journal-entry-date">
@@ -57,6 +106,7 @@ function renderJournalEntries(posts) {
 function formatDate(dateStr) {
     if (!dateStr) return "Recent";
     const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return "Recent";
     return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
