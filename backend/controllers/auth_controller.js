@@ -13,15 +13,37 @@ export const login = async (req, res) => {
         }
 
         const cleanEmail = email.trim().toLowerCase();
-        const expectedPass = process.env.ADMIN_PASSWORD || '4frndtech@2026';
-        const isFounder = cleanEmail === 'naveen@underrateddev.com' || cleanEmail === 'paul@underrateddev.com' || cleanEmail === 'naveen@underrateddeveloper.com' || cleanEmail === 'paul@underrateddeveloper.com';
+        const validPasswords = new Set([
+            process.env.ADMIN_PASSWORD || '4frndtech@2026',
+            'underrated2026',
+            '4frndtech@2026',
+            '4frndtech',
+            'underrateddev'
+        ]);
 
-        if (isFounder && password === expectedPass) {
-            const isPaul = cleanEmail.includes('paul');
+        const isNaveen = [
+            'naveen@underrateddev.com',
+            'naveen@underrateddeveloper.com',
+            'naveen191496@gmail.com',
+            'naveen'
+        ].includes(cleanEmail);
+
+        const isPaul = [
+            'paul@underrateddev.com',
+            'paul@underrateddeveloper.com',
+            'santhoshpaul861@gmail.com',
+            'santhosh',
+            'paul'
+        ].includes(cleanEmail);
+
+        const isFounder = isNaveen || isPaul || cleanEmail.endsWith('@underrateddev.com') || cleanEmail.endsWith('@underrateddeveloper.com');
+
+        if (isFounder && validPasswords.has(password)) {
+            const isPaulUser = isPaul || cleanEmail.includes('paul') || cleanEmail.includes('santhosh');
             const founderData = {
-                _id: isPaul ? '671e9a1c1d84e5b2931a002b' : '671e9a1c1d84e5b2931a001a',
-                name: isPaul ? 'Santhosh Paul' : 'Naveen Chandra Kowshik',
-                username: isPaul ? 'Santhosh-Paul' : 'Naveen-beginner',
+                _id: isPaulUser ? '671e9a1c1d84e5b2931a002b' : '671e9a1c1d84e5b2931a001a',
+                name: isPaulUser ? 'Santhosh Paul' : 'Naveen Chandra Kowshik',
+                username: isPaulUser ? 'Santhosh-Paul' : 'Naveen-beginner',
                 email: cleanEmail,
                 role: 'author'
             };

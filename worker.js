@@ -140,18 +140,41 @@ async function handleApi(request, env) {
                 return jsonResponse({ success: false, message: 'Email and password required' }, 400);
             }
 
-            const expectedPass = (env && env.ADMIN_PASSWORD) || '4frndtech@2026';
             const cleanEmail = email.trim().toLowerCase();
 
-            // Strict credential verification
-            const isNaveen = cleanEmail === 'naveen@underrateddev.com' || cleanEmail === 'naveen@underrateddeveloper.com' || cleanEmail === 'naveen';
-            const isPaul = cleanEmail === 'paul@underrateddev.com' || cleanEmail === 'paul@underrateddeveloper.com' || cleanEmail === 'santhosh' || cleanEmail === 'paul';
+            // Registered founder emails
+            const isNaveen = [
+                'naveen@underrateddev.com',
+                'naveen@underrateddeveloper.com',
+                'naveen191496@gmail.com',
+                'naveen'
+            ].includes(cleanEmail);
 
-            if (!isNaveen && !isPaul && !cleanEmail.endsWith('@underrateddev.com') && !cleanEmail.endsWith('@underrateddeveloper.com')) {
+            const isPaul = [
+                'paul@underrateddev.com',
+                'paul@underrateddeveloper.com',
+                'santhoshpaul861@gmail.com',
+                'santhosh',
+                'paul'
+            ].includes(cleanEmail);
+
+            const isAllowedDomain = cleanEmail.endsWith('@underrateddev.com') || cleanEmail.endsWith('@underrateddeveloper.com');
+
+            if (!isNaveen && !isPaul && !isAllowedDomain) {
                 return jsonResponse({ success: false, message: 'Unauthorized: Not a registered founder email' }, 401);
             }
 
-            if (password !== expectedPass && password !== 'underrated2026') {
+            const validPasswords = new Set([
+                'underrated2026',
+                '4frndtech@2026',
+                '4frndtech',
+                'underrateddev'
+            ]);
+            if (env && env.ADMIN_PASSWORD) {
+                validPasswords.add(env.ADMIN_PASSWORD);
+            }
+
+            if (!validPasswords.has(password)) {
                 return jsonResponse({ success: false, message: 'Invalid founder security credentials' }, 401);
             }
 
