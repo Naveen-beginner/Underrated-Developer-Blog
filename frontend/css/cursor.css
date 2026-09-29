@@ -1,155 +1,190 @@
 /* ==========================================================================
-   CANVA-STYLE TECHNICAL INTERACTIVE CURSOR
-   Smooth trailing aura, precision core dot, magnetic hover & code badges
+   AUTHENTIC CANVA-STYLE DESIGNER CURSOR
+   Iconic Canva / Figma collaborative arrow pointer with live interactive tag
    Exclusively active on desktop pointers (pointer: fine & hover: hover)
    ========================================================================== */
 
 @media (pointer: fine) and (hover: hover) {
-    /* Hide native default cursor on interactive items where appropriate or keep balanced */
-    .ud-cursor-active a,
-    .ud-cursor-active button,
-    .ud-cursor-active .topic-chip,
-    .ud-cursor-active .work-row-item,
-    .ud-cursor-active .journal-entry-row,
-    .ud-cursor-active .featured-card {
-        cursor: pointer;
+    /* Hide native cursor across the document when custom cursor is active */
+    html.canva-cursor-enabled,
+    html.canva-cursor-enabled body,
+    html.canva-cursor-enabled a,
+    html.canva-cursor-enabled button,
+    html.canva-cursor-enabled input,
+    html.canva-cursor-enabled select,
+    html.canva-cursor-enabled textarea,
+    html.canva-cursor-enabled [role="button"],
+    html.canva-cursor-enabled .topic-chip,
+    html.canva-cursor-enabled .work-row-item,
+    html.canva-cursor-enabled .featured-card {
+        cursor: none !important;
     }
 
-    /* Cursor Canvas Container */
-    .ud-cursor-container {
+    /* Top-level Cursor Container */
+    .canva-cursor-root {
         position: fixed;
         top: 0;
         left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        z-index: 99999;
-        overflow: hidden;
-    }
-
-    /* Core Precision Dot */
-    .ud-cursor-dot {
-        position: fixed;
-        top: -4px;
-        left: -4px;
-        width: 8px;
-        height: 8px;
-        background: var(--accent-blue);
-        border-radius: 50%;
+        width: 0;
+        height: 0;
         pointer-events: none;
         z-index: 100000;
-        box-shadow: 0 0 10px var(--accent-blue);
+        overflow: visible;
         will-change: transform;
-        transition: opacity 0.2s ease, width 0.2s ease, height 0.2s ease, background-color 0.2s ease;
+        transition: opacity 0.15s ease;
     }
 
-    /* Smooth Canva Follower Ring */
-    .ud-cursor-ring {
+    .canva-cursor-hidden {
+        opacity: 0 !important;
+    }
+
+    /* Canva Arrow Pointer */
+    .canva-cursor-arrow-wrap {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 24px;
+        height: 24px;
+        transform-origin: 0 0;
+        filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.25));
+        transition: transform 0.12s ease;
+    }
+
+    .canva-cursor-arrow {
+        width: 22px;
+        height: 22px;
+        display: block;
+    }
+
+    /* Arrow Fill Color - Vibrant Canva Blue / Tech Cyan */
+    .canva-cursor-arrow path {
+        fill: #0284c7;
+        stroke: #ffffff;
+        stroke-width: 1.5;
+        stroke-linejoin: round;
+        transition: fill 0.2s ease;
+    }
+
+    [data-theme="dark"] .canva-cursor-arrow path {
+        fill: #38bdf8;
+        stroke: #0b0f19;
+    }
+
+    /* Canva User Pill Badge */
+    .canva-cursor-tag {
+        position: absolute;
+        top: 18px;
+        left: 14px;
+        background: #0284c7;
+        color: #ffffff;
+        padding: 3px 9px;
+        border-radius: 12px 12px 12px 2px;
+        font-family: var(--font-sans, -apple-system, sans-serif);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: -0.2px;
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
+        user-select: none;
+        pointer-events: none;
+        will-change: transform;
+        transition: background-color 0.2s ease, transform 0.18s ease, color 0.2s ease;
+    }
+
+    [data-theme="dark"] .canva-cursor-tag {
+        background: #38bdf8;
+        color: #0b0f19;
+        box-shadow: 0 4px 16px rgba(56, 189, 248, 0.35);
+    }
+
+    /* Live Status Dot in Pill */
+    .canva-cursor-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #22c55e; /* Online emerald */
+        display: inline-block;
+        flex-shrink: 0;
+        box-shadow: 0 0 6px #22c55e;
+    }
+
+    /* Tag Text */
+    .canva-cursor-text {
+        line-height: 1.2;
+    }
+
+    /* Interactive Hover States */
+    .canva-cursor-root.is-hovering .canva-cursor-arrow-wrap {
+        transform: scale(1.12);
+    }
+
+    .canva-cursor-root.is-hovering .canva-cursor-tag {
+        transform: scale(1.05);
+        background: #2563eb;
+    }
+
+    [data-theme="dark"] .canva-cursor-root.is-hovering .canva-cursor-tag {
+        background: #60a5fa;
+        color: #070a12;
+    }
+
+    .canva-cursor-root.is-hovering .canva-cursor-arrow path {
+        fill: #2563eb;
+    }
+
+    [data-theme="dark"] .canva-cursor-root.is-hovering .canva-cursor-arrow path {
+        fill: #60a5fa;
+    }
+
+    /* Click Active State (Dips & Micro-bounce) */
+    .canva-cursor-root.is-clicked .canva-cursor-arrow-wrap {
+        transform: scale(0.9) rotate(-6deg);
+    }
+
+    .canva-cursor-root.is-clicked .canva-cursor-tag {
+        transform: scale(0.95);
+    }
+
+    /* Canva Click Pulse Ripple */
+    .canva-cursor-ripple {
         position: fixed;
-        top: -20px;
-        left: -20px;
-        width: 40px;
-        height: 40px;
-        border: 1.5px solid var(--accent-blue);
-        background: rgba(2, 132, 199, 0.05);
+        width: 32px;
+        height: 32px;
+        top: -16px;
+        left: -16px;
+        border: 2px solid var(--accent-blue, #0284c7);
         border-radius: 50%;
         pointer-events: none;
-        z-index: 99999;
-        will-change: transform, width, height;
-        transition: border-color 0.2s ease, background-color 0.2s ease, border-radius 0.2s ease, opacity 0.2s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        z-index: 99998;
+        animation: canvaRipple 0.45s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
     }
 
-    [data-theme="dark"] .ud-cursor-ring {
-        background: rgba(56, 189, 248, 0.08);
-        border-color: rgba(56, 189, 248, 0.6);
-        box-shadow: 0 0 16px rgba(56, 189, 248, 0.18);
-    }
-
-    /* Mini Tech Badge inside Follower (Canva / Dev Style) */
-    .ud-cursor-badge {
-        font-family: var(--font-mono);
-        font-size: 9px;
-        font-weight: 700;
-        color: var(--accent-blue);
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        opacity: 0;
-        transform: scale(0.6);
-        transition: opacity 0.18s ease, transform 0.18s ease;
-        white-space: nowrap;
-        pointer-events: none;
-    }
-
-    [data-theme="dark"] .ud-cursor-badge {
-        color: #38bdf8;
-    }
-
-    /* Hover State: Links / Buttons */
-    .ud-cursor-ring.is-hovering {
-        width: 54px;
-        height: 54px;
-        top: -27px;
-        left: -27px;
-        border-color: var(--accent-blue);
-        background: rgba(2, 132, 199, 0.12);
-        backdrop-filter: blur(1px);
-        -webkit-backdrop-filter: blur(1px);
-    }
-
-    [data-theme="dark"] .ud-cursor-ring.is-hovering {
-        background: rgba(56, 189, 248, 0.16);
-        border-color: #38bdf8;
-    }
-
-    .ud-cursor-ring.is-hovering .ud-cursor-badge {
-        opacity: 1;
-        transform: scale(1);
-    }
-
-    /* Hovering Cards / Articles */
-    .ud-cursor-ring.is-card-hover {
-        width: 64px;
-        height: 64px;
-        top: -32px;
-        left: -32px;
-        border-radius: 12px;
-        border-color: var(--accent-blue);
-        background: rgba(2, 132, 199, 0.1);
-    }
-
-    .ud-cursor-ring.is-card-hover .ud-cursor-badge {
-        opacity: 1;
-        transform: scale(1);
-    }
-
-    /* Click Active State */
-    .ud-cursor-ring.is-clicked {
-        transform: scale(0.85) !important;
-        background: rgba(2, 132, 199, 0.25);
-    }
-
-    /* Hidden State (When cursor leaves browser window) */
-    .ud-cursor-hidden {
-        opacity: 0 !important;
+    @keyframes canvaRipple {
+        0% {
+            opacity: 0.9;
+            transform: scale(0.3);
+        }
+        100% {
+            opacity: 0;
+            transform: scale(2.2);
+        }
     }
 }
 
-/* Fallback: Touch devices have zero overhead */
+/* Zero overhead on mobile / touch devices */
 @media (pointer: coarse), (hover: none) {
-    .ud-cursor-container,
-    .ud-cursor-dot,
-    .ud-cursor-ring {
+    .canva-cursor-root,
+    .canva-cursor-ripple {
         display: none !important;
     }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .ud-cursor-container,
-    .ud-cursor-dot,
-    .ud-cursor-ring {
+    .canva-cursor-root,
+    .canva-cursor-ripple {
         display: none !important;
     }
 }

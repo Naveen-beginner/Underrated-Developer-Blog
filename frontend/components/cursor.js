@@ -1,142 +1,149 @@
 // ==============================================================================
-// CANVA-STYLE INTERACTIVE DEV CURSOR
-// Exclusively activates on desktop pointers (pointer: fine)
-// Uses requestAnimationFrame lerp interpolation for silky 60/120fps motion
+// AUTHENTIC CANVA-STYLE DESIGNER CURSOR
+// Iconic Canva / Figma collaborative arrow pointer with live interactive tag
+// Exclusively activates on desktop pointers (pointer: fine & hover: hover)
 // ==============================================================================
 
-(function initTechCursor() {
-    // Only run on desktop devices with fine pointer and no reduced-motion preference
+(function initCanvaCursor() {
     if (typeof window === 'undefined') return;
+
     const isDesktopPointer = window.matchMedia('(pointer: fine) and (hover: hover)').matches;
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     if (!isDesktopPointer || prefersReducedMotion) return;
 
-    // Prevent duplicate initializations
-    if (document.getElementById('ud-cursor-container')) return;
+    if (document.getElementById('canva-cursor-root')) return;
 
-    // Create DOM elements
-    const container = document.createElement('div');
-    container.id = 'ud-cursor-container';
-    container.className = 'ud-cursor-container ud-cursor-hidden';
-    container.setAttribute('aria-hidden', 'true');
+    // Create Root Container
+    const root = document.createElement('div');
+    root.id = 'canva-cursor-root';
+    root.className = 'canva-cursor-root canva-cursor-hidden';
+    root.setAttribute('aria-hidden', 'true');
 
-    const dot = document.createElement('div');
-    dot.className = 'ud-cursor-dot';
+    // Arrow Wrapper with SVG Vector
+    const arrowWrap = document.createElement('div');
+    arrowWrap.className = 'canva-cursor-arrow-wrap';
+    arrowWrap.innerHTML = `
+        <svg class="canva-cursor-arrow" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5.5 3.21V20.8c0 .45.54.67.85.35l4.86-4.86a.5.5 0 0 1 .35-.15h6.87c.45 0 .67-.54.35-.85L5.5 3.21z" />
+        </svg>
+    `;
 
-    const ring = document.createElement('div');
-    ring.className = 'ud-cursor-ring';
+    // Attached Canva User Tag Pill
+    const tag = document.createElement('div');
+    tag.className = 'canva-cursor-tag';
 
-    const badge = document.createElement('span');
-    badge.className = 'ud-cursor-badge';
-    badge.textContent = '<dev/>';
-    ring.appendChild(badge);
+    const dot = document.createElement('span');
+    dot.className = 'canva-cursor-dot';
 
-    container.appendChild(ring);
-    container.appendChild(dot);
-    document.body.appendChild(container);
-    document.body.classList.add('ud-cursor-active');
+    const text = document.createElement('span');
+    text.className = 'canva-cursor-text';
+    text.textContent = 'Naveen • Dev';
 
-    // Smooth physics variables
+    tag.appendChild(dot);
+    tag.appendChild(text);
+
+    root.appendChild(arrowWrap);
+    root.appendChild(tag);
+    document.body.appendChild(root);
+    document.documentElement.classList.add('canva-cursor-enabled');
+
     let mouseX = -100;
     let mouseY = -100;
-    let ringX = -100;
-    let ringY = -100;
     let isVisible = false;
-    let isHovering = false;
-    let isCardHover = false;
-    let currentBadgeText = '<dev/>';
+    const DEFAULT_LABEL = 'Naveen • Dev';
 
-    // Lerp factor (0.16 gives a snappy yet buttery-smooth Canva/Figma trail)
-    const LERP_FACTOR = 0.16;
-
+    // Instant, lag-free 1:1 hardware tracking
     window.addEventListener('mousemove', (e) => {
         mouseX = e.clientX;
         mouseY = e.clientY;
 
         if (!isVisible) {
             isVisible = true;
-            container.classList.remove('ud-cursor-hidden');
-            ringX = mouseX;
-            ringY = mouseY;
+            root.classList.remove('canva-cursor-hidden');
         }
 
-        // Direct GPU translate on dot for 0ms lag
-        dot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
+        root.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
     }, { passive: true });
 
-    // Handle mouse leaving and entering viewport
     document.addEventListener('mouseleave', () => {
         isVisible = false;
-        container.classList.add('ud-cursor-hidden');
+        root.classList.add('canva-cursor-hidden');
     });
 
     document.addEventListener('mouseenter', () => {
         isVisible = true;
-        container.classList.remove('ud-cursor-hidden');
+        root.classList.remove('canva-cursor-hidden');
     });
 
-    // Click micro-bounce
-    window.addEventListener('mousedown', () => {
-        ring.classList.add('is-clicked');
+    // Click micro-animation & Canva ripple
+    window.addEventListener('mousedown', (e) => {
+        root.classList.add('is-clicked');
+
+        // Create Canva click ripple
+        const ripple = document.createElement('div');
+        ripple.className = 'canva-cursor-ripple';
+        ripple.style.left = `${e.clientX}px`;
+        ripple.style.top = `${e.clientY}px`;
+        document.body.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 450);
     }, { passive: true });
 
     window.addEventListener('mouseup', () => {
-        ring.classList.remove('is-clicked');
+        root.classList.remove('is-clicked');
     }, { passive: true });
 
-    // Interactive target detection using event delegation
+    // Context-sensitive interactive tag updates
     document.addEventListener('mouseover', (e) => {
         const target = e.target;
         if (!target || !(target instanceof Element)) return;
 
         const linkEl = target.closest('a');
         const btnEl = target.closest('button');
-        const cardEl = target.closest('.featured-card, .journal-entry-row, .work-row-item, .hero-status-pill, .topic-chip');
+        const cardEl = target.closest('.featured-card, .journal-entry-row, .work-row-item, .author-card-main');
         const codeEl = target.closest('pre, code, .code-snippet-box');
+        const topicChip = target.closest('.topic-chip');
 
         if (codeEl) {
-            isHovering = true;
-            isCardHover = false;
-            currentBadgeText = '{ }';
-            badge.textContent = currentBadgeText;
-            ring.classList.add('is-hovering');
-            ring.classList.remove('is-card-hover');
+            root.classList.add('is-hovering');
+            text.textContent = '{ } Code';
+            dot.style.background = '#f59e0b';
+            dot.style.boxShadow = '0 0 6px #f59e0b';
         } else if (cardEl) {
-            isHovering = false;
-            isCardHover = true;
-            currentBadgeText = 'read';
-            badge.textContent = currentBadgeText;
-            ring.classList.add('is-card-hover');
-            ring.classList.remove('is-hovering');
-        } else if (linkEl || btnEl) {
-            isHovering = true;
-            isCardHover = false;
-            if (btnEl && (btnEl.id === 'theme-toggle-btn' || btnEl.id === 'sidebar-theme-btn')) {
-                currentBadgeText = 'theme';
-            } else if (linkEl && linkEl.getAttribute('target') === '_blank') {
-                currentBadgeText = 'open ↗';
+            root.classList.add('is-hovering');
+            text.textContent = 'Read Article ↗';
+            dot.style.background = '#22c55e';
+            dot.style.boxShadow = '0 0 6px #22c55e';
+        } else if (topicChip) {
+            root.classList.add('is-hovering');
+            text.textContent = 'Filter by Tag';
+            dot.style.background = '#38bdf8';
+            dot.style.boxShadow = '0 0 6px #38bdf8';
+        } else if (btnEl) {
+            root.classList.add('is-hovering');
+            if (btnEl.id === 'theme-toggle-btn' || btnEl.id === 'sidebar-theme-btn') {
+                text.textContent = 'Switch Theme ☀';
+            } else if (btnEl.id === 'sidebar-close-btn') {
+                text.textContent = 'Close ✕';
             } else {
-                currentBadgeText = '<dev/>';
+                text.textContent = 'Action';
             }
-            badge.textContent = currentBadgeText;
-            ring.classList.add('is-hovering');
-            ring.classList.remove('is-card-hover');
+            dot.style.background = '#38bdf8';
+            dot.style.boxShadow = '0 0 6px #38bdf8';
+        } else if (linkEl) {
+            root.classList.add('is-hovering');
+            if (linkEl.getAttribute('target') === '_blank') {
+                text.textContent = 'Visit External ↗';
+            } else {
+                text.textContent = 'Navigate ↗';
+            }
+            dot.style.background = '#22c55e';
+            dot.style.boxShadow = '0 0 6px #22c55e';
         } else {
-            isHovering = false;
-            isCardHover = false;
-            ring.classList.remove('is-hovering', 'is-card-hover');
+            root.classList.remove('is-hovering');
+            text.textContent = DEFAULT_LABEL;
+            dot.style.background = '#22c55e';
+            dot.style.boxShadow = '0 0 6px #22c55e';
         }
     }, { passive: true });
-
-    // Animation loop using requestAnimationFrame
-    function animateCursor() {
-        if (isVisible) {
-            ringX += (mouseX - ringX) * LERP_FACTOR;
-            ringY += (mouseY - ringY) * LERP_FACTOR;
-            ring.style.transform = `translate3d(${ringX}px, ${ringY}px, 0)`;
-        }
-        requestAnimationFrame(animateCursor);
-    }
-    requestAnimationFrame(animateCursor);
 })();

@@ -202,7 +202,6 @@ class AppNavBar extends HTMLElement {
             updateThemeLabel(nextTheme);
         };
 
-        const themeBtn = this.querySelector("#theme-toggle-btn");
         if (themeBtn) {
             themeBtn.addEventListener('click', toggleTheme);
         }

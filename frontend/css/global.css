@@ -90,8 +90,6 @@ html {
     color-scheme: light;
     font-size: 16px;
     -webkit-text-size-adjust: 100%;
-    overflow-x: clip;
-    max-width: 100vw;
 }
 
 html[data-theme="dark"] {
@@ -109,8 +107,7 @@ body {
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    overflow-x: clip;
-    max-width: 100vw;
+    overflow-x: hidden;
     width: 100%;
     transition: background-color var(--transition), color var(--transition);
 }

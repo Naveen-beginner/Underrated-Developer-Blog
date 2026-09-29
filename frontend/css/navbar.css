@@ -1,5 +1,10 @@
 /* Clean, Balanced Navbar Styling (White Background, Sharp Slate Borders) */
 
+app-navbar {
+    display: block;
+    width: 100%;
+}
+
 .navbar-wrapper {
     position: sticky;
     top: 0;
