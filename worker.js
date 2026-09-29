@@ -96,29 +96,57 @@ function jsonResponse(data, status = 200, customHeaders = {}) {
 // In-memory runtime cache for serverless invocation lifecycle
 let memoryPosts = Array.isArray(defaultPosts) && defaultPosts.length > 0 ? [...defaultPosts] : [];
 let lastFetchedAt = 0;
-const CACHE_TTL_MS = 60 * 1000; // 60 seconds memory cache in worker isolate
-let mongoClient = null;
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes in-memory cache in worker isolate
 
-async function getMongoCollection(env) {
+async function fetchPostsFromMongo(env) {
     const uri = (env && env.MONGO_URI) || 'mongodb+srv://rakurthikowshik_db_user:lYGwM504rBJ2cqw9@cluster0.e7nzofn.mongodb.net/blog-underrated?appName=Cluster0';
+    const client = new MongoClient(uri, {
+        maxPoolSize: 1,
+        minPoolSize: 0,
+        serverSelectionTimeoutMS: 4000,
+        connectTimeoutMS: 4000,
+        socketTimeoutMS: 5000,
+    });
+
     try {
-        if (!mongoClient) {
-            const client = new MongoClient(uri, {
-                maxPoolSize: 1,
-                minPoolSize: 0,
-                serverSelectionTimeoutMS: 4000,
-                connectTimeoutMS: 4000,
-                socketTimeoutMS: 6000,
-            });
-            await client.connect();
-            mongoClient = client;
+        await client.connect();
+        const db = client.db('blog-underrated');
+        const docs = await db.collection('posts').find({ published: true }).sort({ publishedAt: -1, createdAt: -1 }).toArray();
+        return docs;
+    } finally {
+        try {
+            await client.close();
+        } catch (_) {}
+    }
+}
+
+async function persistPostsToMongo(posts, env) {
+    const uri = (env && env.MONGO_URI) || 'mongodb+srv://rakurthikowshik_db_user:lYGwM504rBJ2cqw9@cluster0.e7nzofn.mongodb.net/blog-underrated?appName=Cluster0';
+    const client = new MongoClient(uri, {
+        maxPoolSize: 1,
+        minPoolSize: 0,
+        serverSelectionTimeoutMS: 4000,
+        connectTimeoutMS: 4000,
+        socketTimeoutMS: 5000,
+    });
+
+    try {
+        await client.connect();
+        const db = client.db('blog-underrated');
+        const coll = db.collection('posts');
+        for (const post of posts) {
+            if (!post.slug) continue;
+            const { _id, ...rest } = post;
+            await coll.updateOne(
+                { slug: post.slug },
+                { $set: { ...rest, slug: post.slug, updatedAt: new Date() } },
+                { upsert: true }
+            );
         }
-        const db = mongoClient.db('blog-underrated');
-        return db.collection('posts');
-    } catch (err) {
-        // Discard failed client reference to prevent poisoned state on next request
-        mongoClient = null;
-        throw err;
+    } finally {
+        try {
+            await client.close();
+        } catch (_) {}
     }
 }
 
@@ -131,8 +159,7 @@ async function getStoredPosts(env, forceRefresh = false) {
 
     // 1. Try MongoDB Atlas directly
     try {
-        const coll = await getMongoCollection(env);
-        const docs = await coll.find({ published: true }).sort({ publishedAt: -1, createdAt: -1 }).toArray();
+        const docs = await fetchPostsFromMongo(env);
         if (Array.isArray(docs) && docs.length > 0) {
             const mapped = docs.map(doc => ({
                 ...doc,
@@ -144,7 +171,6 @@ async function getStoredPosts(env, forceRefresh = false) {
         }
     } catch (err) {
         console.warn('MongoDB Atlas read fallback:', err.message);
-        mongoClient = null;
     }
 
     // 2. Try Cloudflare KV
@@ -178,19 +204,9 @@ async function saveStoredPosts(posts, env) {
 
     // 1. Try MongoDB Atlas persistence
     try {
-        const coll = await getMongoCollection(env);
-        for (const post of posts) {
-            if (!post.slug) continue;
-            const { _id, ...rest } = post;
-            await coll.updateOne(
-                { slug: post.slug },
-                { $set: { ...rest, slug: post.slug, updatedAt: new Date() } },
-                { upsert: true }
-            );
-        }
+        await persistPostsToMongo(posts, env);
     } catch (err) {
         console.warn('MongoDB Atlas write fallback:', err.message);
-        mongoClient = null;
     }
 
     // 2. Try Cloudflare KV persistence
