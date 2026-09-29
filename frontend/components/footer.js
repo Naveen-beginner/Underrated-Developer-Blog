@@ -5,7 +5,7 @@ class AppFooter extends HTMLElement {
             <div class="container footer-inner">
                 <div class="footer-primary-col">
                     <div class="footer-brand">
-                        <img src="assets/favicons/official_logo_branding_transparent.png" alt="Underrated Developer Logo" class="footer-logo-img">
+                        <img src="assets/favicons/official_logo_branding_transparent.png" alt="Underrated Developer Logo" class="footer-logo-img" width="40" height="40" loading="lazy" decoding="async">
                         <div>
                             <strong>Underrated Developer</strong>
                             <span>by Team 4FrndTech • Naveen &amp; Santhosh Paul</span>
@@ -33,19 +33,19 @@ class AppFooter extends HTMLElement {
 
                     <div class="footer-col">
                         <h4>Verified Works</h4>
-                        <a href="https://play.google.com/store/apps/dev?id=8374043554473360551" target="_blank" rel="noopener">Google Play Console</a>
-                        <a href="https://chromewebstore.google.com/detail/devpanel-quick-tools/famnandbemapcianiefnnhcaabhilhgj" target="_blank" rel="noopener">Chrome Web Store</a>
-                        <a href="https://www.npmjs.com/package/secureform-kit" target="_blank" rel="noopener">NPM: secureform-kit</a>
-                        <a href="https://github.com/Naveen-beginner" target="_blank" rel="noopener">GitHub (Naveen)</a>
-                        <a href="https://devfrnd.netlify.app" target="_blank" rel="noopener">Portfolio (Santhosh)</a>
+                        <a href="https://play.google.com/store/apps/dev?id=8374043554473360551" target="_blank" rel="noopener noreferrer">Google Play Console</a>
+                        <a href="https://chromewebstore.google.com/detail/devpanel-quick-tools/famnandbemapcianiefnnhcaabhilhgj" target="_blank" rel="noopener noreferrer">Chrome Web Store</a>
+                        <a href="https://www.npmjs.com/package/secureform-kit" target="_blank" rel="noopener noreferrer">NPM: secureform-kit</a>
+                        <a href="https://github.com/Naveen-beginner" target="_blank" rel="noopener noreferrer">GitHub (Naveen)</a>
+                        <a href="https://devfrnd.netlify.app" target="_blank" rel="noopener noreferrer">Portfolio (Santhosh)</a>
                     </div>
 
                     <div class="footer-col">
                         <h4>Connect</h4>
                         <a href="mailto:naveen191496@gmail.com">Email Naveen</a>
                         <a href="mailto:santhoshpaul861@gmail.com">Email Santhosh</a>
-                        <a href="https://github.com/Naveen-beginner" target="_blank" rel="noopener">GitHub</a>
-                        <a href="https://www.linkedin.com/in/naveen-chandra-kowshik-31a4b63a3/" target="_blank" rel="noopener">LinkedIn</a>
+                        <a href="https://github.com/Naveen-beginner" target="_blank" rel="noopener noreferrer">GitHub</a>
+                        <a href="https://www.linkedin.com/in/naveen-chandra-kowshik-31a4b63a3/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
                     </div>
                 </div>
             </div>

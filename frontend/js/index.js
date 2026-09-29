@@ -14,7 +14,6 @@ async function loadHomeContent() {
         renderFeaturedCard(posts);
         renderJournalEntries(posts);
     } catch (e) {
-        console.error("Failed to load journal entries:", e);
         renderFeaturedCard([]);
         renderJournalEntries([]);
     }

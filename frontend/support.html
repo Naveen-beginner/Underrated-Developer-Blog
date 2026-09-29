@@ -33,8 +33,11 @@
     <!-- Icons & Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap">
+    <!-- Non-render-blocking Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></noscript>
 
     <!-- Theme Initialization (Prevents flash) -->
     <script>
@@ -54,10 +57,12 @@
     <link rel="stylesheet" href="css/navbar.css">
     <link rel="stylesheet" href="css/support.css">
     <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/cursor.css">
 
     <!-- Components -->
     <script type="module" src="components/navbar.js"></script>
     <script type="module" src="components/footer.js"></script>
+    <script type="module" src="components/cursor.js"></script>
 </head>
 
 <body>
@@ -99,7 +104,7 @@
                     <p>
                         All our community tools, including sample repositories and Chrome extensions, are hosted on GitHub. Feel free to open issues or contribute PRs.
                     </p>
-                    <a href="https://github.com/Naveen-beginner" target="_blank" rel="noopener" class="btn btn-primary">
+                    <a href="https://github.com/Naveen-beginner" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
                         <i class="fa-brands fa-github"></i> Visit GitHub Repositories
                     </a>
                 </section>
@@ -115,7 +120,7 @@
                     <a href="mailto:santhoshpaul861@gmail.com" class="btn btn-secondary" style="margin-bottom: 8px; width: 100%; justify-content: center;">
                         <span class="material-symbols-outlined">mail</span> Email Santhosh Paul
                     </a>
-                    <a href="https://www.linkedin.com/in/naveen-chandra-kowshik-31a4b63a3/" target="_blank" rel="noopener" class="btn btn-secondary" style="width: 100%; justify-content: center;">
+                    <a href="https://www.linkedin.com/in/naveen-chandra-kowshik-31a4b63a3/" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" style="width: 100%; justify-content: center;">
                         <i class="fa-brands fa-linkedin"></i> LinkedIn
                     </a>
                 </div>

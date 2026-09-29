@@ -4,7 +4,7 @@ class AppNavBar extends HTMLElement {
         <header class="navbar-wrapper">
             <nav class="navbar" aria-label="Main Navigation">
                 <a href="index.html" class="nav-brand" aria-label="Underrated Developer Home">
-                    <img src="assets/favicons/official_logo_branding_transparent.png" alt="Underrated Developer Logo" class="brand-logo-img">
+                    <img src="assets/favicons/official_logo_branding_transparent.png" alt="Underrated Developer Logo" class="brand-logo-img" width="48" height="48">
                     <div class="brand-text-col">
                         <span class="brand-name">Underrated Developer</span>
                         <span class="brand-sub">Team 4FrndTech • Naveen &amp; Santhosh Paul</span>
@@ -15,10 +15,10 @@ class AppNavBar extends HTMLElement {
                 <div class="nav-backdrop" id="nav-backdrop" aria-hidden="true"></div>
 
                 <!-- Navigation (Desktop Inline / Mobile Slide-Out Sidebar) -->
-                <div class="nav-menu" id="nav-menu" role="dialog" aria-label="Navigation Menu">
+                <div class="nav-menu" id="nav-menu" role="dialog" aria-label="Navigation Menu" aria-modal="true">
                     <div class="sidebar-header">
                         <div class="sidebar-brand">
-                            <img src="assets/favicons/official_logo_branding_transparent.png" alt="Underrated Developer Logo" class="sidebar-logo-img">
+                            <img src="assets/favicons/official_logo_branding_transparent.png" alt="Underrated Developer Logo" class="sidebar-logo-img" width="44" height="44">
                             <div class="sidebar-brand-text">
                                 <span class="sidebar-brand-name">Underrated Dev</span>
                                 <span class="sidebar-brand-sub">Team 4FrndTech</span>
@@ -51,18 +51,18 @@ class AppNavBar extends HTMLElement {
                     <div class="sidebar-footer">
                         <div class="sidebar-theme-row">
                             <span class="sidebar-footer-label">Appearance</span>
-                            <button class="sidebar-theme-btn" id="sidebar-theme-btn" aria-label="Toggle dark/light theme">
+                            <button class="sidebar-theme-btn" id="sidebar-theme-btn" aria-label="Toggle dark and light theme">
                                 <span class="material-symbols-outlined theme-icon-sun">light_mode</span>
                                 <span class="material-symbols-outlined theme-icon-moon">dark_mode</span>
                                 <span class="sidebar-theme-status-text" id="sidebar-theme-text">Toggle Theme</span>
                             </button>
                         </div>
                         <div class="sidebar-social-row">
-                            <a href="https://github.com/Naveen-beginner" target="_blank" rel="noopener" class="sidebar-social-link" title="GitHub Profile">
+                            <a href="https://github.com/Naveen-beginner" target="_blank" rel="noopener noreferrer" class="sidebar-social-link" title="GitHub Profile" aria-label="GitHub Profile">
                                 <i class="fa-brands fa-github"></i>
                                 <span>GitHub</span>
                             </a>
-                            <a href="https://play.google.com/store/apps/dev?id=8374043554473360551" target="_blank" rel="noopener" class="sidebar-social-link" title="Google Play Store Developer">
+                            <a href="https://play.google.com/store/apps/dev?id=8374043554473360551" target="_blank" rel="noopener noreferrer" class="sidebar-social-link" title="Google Play Store Developer" aria-label="Google Play Store Developer">
                                 <i class="fa-brands fa-google-play"></i>
                                 <span>Play Store</span>
                             </a>
@@ -75,14 +75,14 @@ class AppNavBar extends HTMLElement {
                 </div>
 
                 <div class="nav-meta-actions">
-                    <button class="theme-toggle-btn" id="theme-toggle-btn" aria-label="Toggle dark/white theme" title="Toggle dark/light theme">
+                    <button class="theme-toggle-btn" id="theme-toggle-btn" aria-label="Toggle dark and light theme" title="Toggle dark/light theme">
                         <span class="material-symbols-outlined theme-icon-sun">light_mode</span>
                         <span class="material-symbols-outlined theme-icon-moon">dark_mode</span>
                     </button>
-                    <a href="https://github.com/Naveen-beginner" target="_blank" rel="noopener" class="nav-icon-link nav-desktop-action" aria-label="GitHub Profile" title="GitHub">
+                    <a href="https://github.com/Naveen-beginner" target="_blank" rel="noopener noreferrer" class="nav-icon-link nav-desktop-action" aria-label="GitHub Profile" title="GitHub">
                         <i class="fa-brands fa-github"></i>
                     </a>
-                    <a href="https://play.google.com/store/apps/dev?id=8374043554473360551" target="_blank" rel="noopener" class="nav-icon-link nav-desktop-action" aria-label="Play Store Developer" title="Google Play Store">
+                    <a href="https://play.google.com/store/apps/dev?id=8374043554473360551" target="_blank" rel="noopener noreferrer" class="nav-icon-link nav-desktop-action" aria-label="Play Store Developer" title="Google Play Store">
                         <i class="fa-brands fa-google-play"></i>
                     </a>
                     <button class="nav-mobile-toggle" id="nav-mobile-toggle" aria-label="Open navigation menu" aria-expanded="false" aria-controls="nav-menu">
@@ -98,10 +98,30 @@ class AppNavBar extends HTMLElement {
         const backdrop = this.querySelector("#nav-backdrop");
         const closeBtn = this.querySelector("#sidebar-close-btn");
         const sidebarThemeText = this.querySelector("#sidebar-theme-text");
+        const themeBtn = this.querySelector("#theme-toggle-btn");
+
+        const syncInertState = () => {
+            if (window.innerWidth <= 768) {
+                if (!navMenu.classList.contains('open')) {
+                    navMenu.inert = true;
+                    navMenu.setAttribute('aria-hidden', 'true');
+                } else {
+                    navMenu.inert = false;
+                    navMenu.removeAttribute('aria-hidden');
+                }
+            } else {
+                navMenu.inert = false;
+                navMenu.removeAttribute('aria-hidden');
+            }
+        };
 
         const updateThemeLabel = (theme) => {
+            const label = theme === 'dark' ? 'Switch to Light Theme' : 'Switch to Dark Theme';
             if (sidebarThemeText) {
                 sidebarThemeText.textContent = theme === 'dark' ? 'Dark Mode' : 'Light Mode';
+            }
+            if (themeBtn) {
+                themeBtn.setAttribute('aria-label', label);
             }
         };
 
@@ -111,6 +131,9 @@ class AppNavBar extends HTMLElement {
             if (backdrop) backdrop.classList.add('open');
             document.body.classList.add('nav-open');
             if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'true');
+            navMenu.removeAttribute('aria-hidden');
+            navMenu.inert = false;
+            closeBtn?.focus();
         };
 
         const closeSidebar = () => {
@@ -118,8 +141,21 @@ class AppNavBar extends HTMLElement {
             navMenu.classList.remove('open');
             if (backdrop) backdrop.classList.remove('open');
             document.body.classList.remove('nav-open');
-            if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'false');
+            if (toggleBtn) {
+                toggleBtn.setAttribute('aria-expanded', 'false');
+                toggleBtn.focus();
+            }
+            syncInertState();
         };
+
+        syncInertState();
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768 && navMenu.classList.contains('open')) {
+                closeSidebar();
+            } else {
+                syncInertState();
+            }
+        }, { passive: true });
 
         if (toggleBtn) {
             toggleBtn.addEventListener('click', (e) => {
@@ -138,6 +174,7 @@ class AppNavBar extends HTMLElement {
 
         if (backdrop) {
             backdrop.addEventListener('click', closeSidebar);
+            backdrop.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
         }
 
         // Close on escape key

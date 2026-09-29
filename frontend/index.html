@@ -39,8 +39,11 @@
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap">
+    <!-- Non-render-blocking Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></noscript>
 
     <!-- Theme Initialization (Prevents flash) -->
     <script>
@@ -60,10 +63,12 @@
     <link rel="stylesheet" href="css/navbar.css">
     <link rel="stylesheet" href="css/home.css">
     <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/cursor.css">
 
     <!-- Components -->
     <script type="module" src="components/navbar.js"></script>
     <script type="module" src="components/footer.js"></script>
+    <script type="module" src="components/cursor.js"></script>
 </head>
 
 <body>
@@ -94,7 +99,7 @@
                         </div>
                     </div>
                     <div class="hero-logo-card">
-                        <img src="assets/favicons/official_logo_branding_transparent.png" alt="Underrated Developer Official Logo" class="hero-official-logo">
+                        <img src="assets/favicons/official_logo_branding_transparent.png" alt="Underrated Developer Official Logo" class="hero-official-logo" width="160" height="160" fetchpriority="high" decoding="async">
                     </div>
                 </div>
 
@@ -143,19 +148,19 @@
                             <h3>Production Credentials</h3>
                         </div>
                         <div class="verified-works-list">
-                            <a href="https://play.google.com/store/apps/dev?id=8374043554473360551" target="_blank" rel="noopener" class="work-row-item">
+                            <a href="https://play.google.com/store/apps/dev?id=8374043554473360551" target="_blank" rel="noopener noreferrer" class="work-row-item">
                                 <span><i class="fa-brands fa-google-play"></i> Google Play Store</span>
                                 <span class="work-badge">Live Apps</span>
                             </a>
-                            <a href="https://chromewebstore.google.com/detail/devpanel-quick-tools/famnandbemapcianiefnnhcaabhilhgj" target="_blank" rel="noopener" class="work-row-item">
+                            <a href="https://chromewebstore.google.com/detail/devpanel-quick-tools/famnandbemapcianiefnnhcaabhilhgj" target="_blank" rel="noopener noreferrer" class="work-row-item">
                                 <span><i class="fa-brands fa-chrome"></i> Chrome Web Store</span>
                                 <span class="work-badge">DevPanel Ext</span>
                             </a>
-                            <a href="https://www.npmjs.com/package/secureform-kit" target="_blank" rel="noopener" class="work-row-item">
+                            <a href="https://www.npmjs.com/package/secureform-kit" target="_blank" rel="noopener noreferrer" class="work-row-item">
                                 <span><i class="fa-brands fa-npm"></i> NPM Registry</span>
                                 <span class="work-badge">secureform-kit</span>
                             </a>
-                            <a href="https://github.com/Naveen-beginner" target="_blank" rel="noopener" class="work-row-item">
+                            <a href="https://github.com/Naveen-beginner" target="_blank" rel="noopener noreferrer" class="work-row-item">
                                 <span><i class="fa-brands fa-github"></i> GitHub Repos</span>
                                 <span class="work-badge">Open Source</span>
                             </a>

@@ -33,8 +33,11 @@
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap">
+    <!-- Non-render-blocking Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></noscript>
 
     <!-- Theme Initialization (Prevents flash) -->
     <script>
@@ -54,10 +57,12 @@
     <link rel="stylesheet" href="css/navbar.css">
     <link rel="stylesheet" href="css/author.css">
     <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/cursor.css">
 
     <!-- Components -->
     <script type="module" src="components/navbar.js"></script>
     <script type="module" src="components/footer.js"></script>
+    <script type="module" src="components/cursor.js"></script>
 
     <!-- Schema.org JSON-LD -->
     <script type="application/ld+json">
@@ -92,7 +97,7 @@
         <!-- Author 1: Naveen -->
         <section class="author-card-main" id="author-naveen">
             <div class="author-img-wrap">
-                <img src="assets/authors/naveen.png" alt="Naveen - Underrated Developer" loading="lazy">
+                <img src="assets/authors/naveen.png" alt="Naveen - Underrated Developer" width="160" height="160" loading="lazy" decoding="async">
             </div>
 
             <div class="author-details">
@@ -129,11 +134,11 @@
                         <span class="material-symbols-outlined" style="font-size: 16px;">mail</span>
                         <span>Connect with Naveen</span>
                     </a>
-                    <a href="https://github.com/Naveen-beginner" target="_blank" rel="noopener" class="btn btn-secondary">
+                    <a href="https://github.com/Naveen-beginner" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
                         <i class="fa-brands fa-github"></i>
                         <span>GitHub Repos</span>
                     </a>
-                    <a href="https://www.linkedin.com/in/naveen-chandra-kowshik-31a4b63a3/" target="_blank" rel="noopener" class="btn btn-secondary">
+                    <a href="https://www.linkedin.com/in/naveen-chandra-kowshik-31a4b63a3/" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
                         <i class="fa-brands fa-linkedin"></i>
                         <span>LinkedIn</span>
                     </a>
@@ -144,7 +149,7 @@
         <!-- Author 2: Santhosh Paul -->
         <section class="author-card-main" id="author-paul">
             <div class="author-img-wrap">
-                <img src="assets/authors/santhosh.jpg" alt="Santhosh Paul - Underrated Developer" loading="lazy">
+                <img src="assets/authors/santhosh.jpg" alt="Santhosh Paul - Underrated Developer" width="160" height="160" loading="lazy" decoding="async">
             </div>
 
             <div class="author-details">
@@ -181,7 +186,7 @@
                         <span class="material-symbols-outlined" style="font-size: 16px;">mail</span>
                         <span>Connect with Santhosh</span>
                     </a>
-                    <a href="https://devfrnd.netlify.app" target="_blank" rel="noopener" class="btn btn-secondary">
+                    <a href="https://devfrnd.netlify.app" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
                         <i class="fa-solid fa-globe"></i>
                         <span>Portfolio Website</span>
                     </a>

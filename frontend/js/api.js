@@ -33,7 +33,7 @@ export async function fetchAllPosts(tag = null, search = null) {
             }
         }
     } catch (err) {
-        console.warn('Database API notice:', err.message);
+        // Fallback to static store gracefully
     }
 
     // Resilient fallback to static data store if offline
@@ -47,7 +47,7 @@ export async function fetchAllPosts(tag = null, search = null) {
             }
         }
     } catch (err) {
-        console.error('Failed to load posts fallback:', err);
+        // Gracefully resolve to empty array
     }
 
     return [];
@@ -76,7 +76,7 @@ export async function fetchPostByIdOrSlug(idOrSlug) {
             }
         }
     } catch (err) {
-        console.warn('Database query notice:', err.message);
+        // Fallback to static store gracefully
     }
 
     // Fallback to static posts file
@@ -91,7 +91,7 @@ export async function fetchPostByIdOrSlug(idOrSlug) {
             }
         }
     } catch (err) {
-        console.error('Failed to query static fallback store:', err);
+        // Gracefully resolve to null
     }
 
     return null;
