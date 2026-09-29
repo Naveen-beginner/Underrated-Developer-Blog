@@ -90,6 +90,7 @@ function jsonResponse(data, status = 200) {
 }
 
 // In-memory runtime cache for serverless invocation lifecycle
+let memoryPosts = Array.isArray(defaultPosts) ? [...defaultPosts] : [];
 let mongoClient = null;
 
 async function getMongoCollection(env) {
@@ -114,7 +115,7 @@ async function getStoredPosts(env) {
         if (Array.isArray(docs) && docs.length > 0) {
             return docs.map(doc => ({
                 ...doc,
-                _id: doc._id ? doc._id.toString() : doc.slug
+                _id: doc._id ? String(doc._id) : doc.slug
             }));
         }
     } catch (err) {
@@ -144,9 +145,10 @@ async function saveStoredPosts(posts, env) {
     try {
         const coll = await getMongoCollection(env);
         for (const post of posts) {
+            if (!post.slug) continue;
             const { _id, ...rest } = post;
             await coll.updateOne(
-                { $or: [{ slug: post.slug }, { _id: String(_id) }] },
+                { slug: post.slug },
                 { $set: { ...rest, slug: post.slug, updatedAt: new Date() } },
                 { upsert: true }
             );
