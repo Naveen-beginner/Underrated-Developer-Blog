@@ -129,22 +129,27 @@ class AppNavBar extends HTMLElement {
             if (!navMenu) return;
             navMenu.classList.add('open');
             if (backdrop) backdrop.classList.add('open');
+            document.documentElement.classList.add('nav-open');
             document.body.classList.add('nav-open');
             if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'true');
             navMenu.removeAttribute('aria-hidden');
             navMenu.inert = false;
-            closeBtn?.focus();
+            // preventScroll prevents mobile browsers from horizontally shifting the viewport
+            closeBtn?.focus({ preventScroll: true });
         };
 
         const closeSidebar = () => {
             if (!navMenu) return;
             navMenu.classList.remove('open');
             if (backdrop) backdrop.classList.remove('open');
+            document.documentElement.classList.remove('nav-open');
             document.body.classList.remove('nav-open');
             if (toggleBtn) {
                 toggleBtn.setAttribute('aria-expanded', 'false');
-                toggleBtn.focus();
+                toggleBtn.focus({ preventScroll: true });
             }
+            // Reset any horizontal viewport shift
+            window.scrollTo({ left: 0, top: window.scrollY, behavior: 'instant' });
             syncInertState();
         };
 

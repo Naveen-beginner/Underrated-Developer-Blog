@@ -12,10 +12,18 @@ app-navbar {
     width: 100%;
     z-index: 1000;
     background: var(--nav-bg);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
     border-bottom: 1px solid var(--border-base);
     transition: background-color var(--transition), border-color var(--transition);
+}
+
+.navbar-wrapper::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: -1;
+    pointer-events: none;
 }
 
 .navbar {
