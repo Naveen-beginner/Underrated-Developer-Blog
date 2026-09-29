@@ -1,7 +1,7 @@
 // ==============================================================================
 // AUTHENTIC CANVA-STYLE MULTIPLAYER CURSOR
 // Iconic Canva / Figma collaborative arrow pointer with live interactive tag
-// Honors both founders (Team 4FrndTech: Naveen & Santhosh Paul)
+// Pure black & white badge styling without emojis or individual founder tags
 // Exclusively activates on desktop pointers (pointer: fine & hover: hover)
 // ==============================================================================
 
@@ -15,7 +15,7 @@
 
     if (document.getElementById('canva-cursor-root')) return;
 
-    // Default neutral team badge honoring both founders
+    // Neutral team branding without individual names or emojis
     const DEFAULT_LABEL = '4FrndTech';
 
     // Create Root Container
@@ -33,7 +33,7 @@
         </svg>
     `;
 
-    // Attached Canva User Tag Pill
+    // Attached Canva User Tag Pill (Black background, White text)
     const tag = document.createElement('div');
     tag.className = 'canva-cursor-tag';
 
@@ -95,30 +95,10 @@
         root.classList.remove('is-clicked');
     }, { passive: true });
 
-    // Context-sensitive interactive tag updates
+    // Context-sensitive interactive tag updates (Clean typography, NO emojis, NO individual founder names)
     document.addEventListener('mouseover', (e) => {
         const target = e.target;
         if (!target || !(target instanceof Element)) return;
-
-        // Specific founder detection (Naveen vs Santhosh Paul)
-        const naveenContext = target.closest('#author-naveen, [data-author="naveen"], a[href*="Naveen-beginner"], a[href*="naveen191496"], a[href*="naveen-chandra-kowshik"]');
-        const paulContext = target.closest('#author-paul, [data-author="paul"], [data-author="santhosh"], a[href*="santhoshpaul"], a[href*="devfrnd"]');
-
-        if (naveenContext) {
-            root.classList.add('is-hovering');
-            text.textContent = 'Naveen (Founder)';
-            dot.style.background = '#38bdf8';
-            dot.style.boxShadow = '0 0 6px #38bdf8';
-            return;
-        }
-
-        if (paulContext) {
-            root.classList.add('is-hovering');
-            text.textContent = 'Santhosh Paul (Founder)';
-            dot.style.background = '#818cf8';
-            dot.style.boxShadow = '0 0 6px #818cf8';
-            return;
-        }
 
         // Interactive UI Element Detection
         const inputEl = target.closest('input, textarea, [contenteditable="true"]');
@@ -132,42 +112,42 @@
 
         if (inputEl) {
             root.classList.add('is-hovering');
-            text.textContent = 'Type Here ✎';
-            dot.style.background = '#a855f7';
-            dot.style.boxShadow = '0 0 6px #a855f7';
+            text.textContent = 'Type Here';
+            dot.style.background = '#38bdf8';
+            dot.style.boxShadow = '0 0 6px #38bdf8';
         } else if (copyBtn) {
             root.classList.add('is-hovering');
-            text.textContent = 'Copy Code 📋';
+            text.textContent = 'Copy Code';
             dot.style.background = '#22c55e';
             dot.style.boxShadow = '0 0 6px #22c55e';
         } else if (codeEl) {
             root.classList.add('is-hovering');
-            text.textContent = '{ } Source Code';
+            text.textContent = 'Source Code';
             dot.style.background = '#f59e0b';
             dot.style.boxShadow = '0 0 6px #f59e0b';
         } else if (workEl) {
             root.classList.add('is-hovering');
-            text.textContent = 'Open Project ↗';
+            text.textContent = 'Open Project';
             dot.style.background = '#38bdf8';
             dot.style.boxShadow = '0 0 6px #38bdf8';
         } else if (cardEl) {
             root.classList.add('is-hovering');
-            text.textContent = 'Read Article ↗';
+            text.textContent = 'Read Article';
             dot.style.background = '#22c55e';
             dot.style.boxShadow = '0 0 6px #22c55e';
         } else if (topicChip) {
             root.classList.add('is-hovering');
-            text.textContent = 'Filter Topic 🏷';
+            text.textContent = 'Filter Topic';
             dot.style.background = '#38bdf8';
             dot.style.boxShadow = '0 0 6px #38bdf8';
         } else if (btnEl) {
             root.classList.add('is-hovering');
             if (btnEl.id === 'theme-toggle-btn' || btnEl.id === 'sidebar-theme-btn') {
-                text.textContent = 'Theme ☀/☾';
+                text.textContent = 'Theme';
                 dot.style.background = '#f59e0b';
                 dot.style.boxShadow = '0 0 6px #f59e0b';
             } else if (btnEl.id === 'sidebar-close-btn') {
-                text.textContent = 'Close ✕';
+                text.textContent = 'Close';
                 dot.style.background = '#ef4444';
                 dot.style.boxShadow = '0 0 6px #ef4444';
             } else {
@@ -178,9 +158,9 @@
         } else if (linkEl) {
             root.classList.add('is-hovering');
             if (linkEl.getAttribute('target') === '_blank') {
-                text.textContent = 'Visit Link ↗';
+                text.textContent = 'Visit Link';
             } else {
-                text.textContent = 'Explore ↗';
+                text.textContent = 'Explore';
             }
             dot.style.background = '#22c55e';
             dot.style.boxShadow = '0 0 6px #22c55e';
