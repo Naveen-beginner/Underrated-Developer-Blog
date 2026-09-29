@@ -1,8 +1,9 @@
 // ==========================================================================
 // UNDERRATED DEVELOPER - CLEAN EDITORIAL BLOG FEED RUNTIME
+// Instant Zero-Latency Filtering + Stale-While-Revalidate Sync
 // ==========================================================================
 
-import { fetchAllPosts } from './api.js';
+import { fetchAllPosts, getLocalCachedPosts, filterPosts } from './api.js';
 
 const postsContainer = document.getElementById("posts-container");
 const searchInput = document.getElementById("search-input");
@@ -31,31 +32,63 @@ async function initBlogFeed() {
 
     setupFilters();
     setupSearch();
+
+    // Fast instant render from cache (0ms perceived latency)
+    const cached = getLocalCachedPosts();
+    if (cached && cached.length > 0) {
+        renderFeed(filterPosts(cached, activeTag, searchQuery));
+    } else if (postsContainer) {
+        postsContainer.innerHTML = `
+            <div style="padding: 40px 0; text-align: center; color: var(--text-dim); font-size: 14px;">
+                Loading articles...
+            </div>
+        `;
+    }
+
     await loadAndRenderPosts();
 }
 
 async function loadAndRenderPosts() {
     if (!postsContainer) return;
 
-    postsContainer.innerHTML = `
-        <div style="padding: 40px 0; text-align: center; color: var(--text-dim); font-size: 14px;">
-            Loading articles...
-        </div>
-    `;
+    // Filter cached posts immediately if available for instantaneous UX
+    const cached = getLocalCachedPosts();
+    if (cached && cached.length > 0) {
+        renderFeed(filterPosts(cached, activeTag, searchQuery));
+    }
 
-    const posts = await fetchAllPosts(activeTag, searchQuery);
-    renderFeed(posts);
+    try {
+        const posts = await fetchAllPosts(activeTag, searchQuery);
+        renderFeed(posts);
+    } catch (e) {
+        console.warn('Error loading posts feed:', e);
+        if (cached && cached.length > 0) {
+            renderFeed(filterPosts(cached, activeTag, searchQuery));
+        } else {
+            renderFeed([]);
+        }
+    }
 }
+
+// Background sync listener: update feed when fresh data arrives
+window.addEventListener('ud:posts-synced', (e) => {
+    const freshPosts = e.detail;
+    if (Array.isArray(freshPosts)) {
+        renderFeed(filterPosts(freshPosts, activeTag, searchQuery));
+    }
+});
 
 function renderFeed(posts) {
     if (!postsContainer) return;
     postsContainer.innerHTML = "";
 
+    const list = Array.isArray(posts) ? posts : [];
+
     if (postsCountLabel) {
-        postsCountLabel.textContent = `Showing ${posts.length} ${posts.length === 1 ? 'article' : 'articles'}`;
+        postsCountLabel.textContent = `Showing ${list.length} ${list.length === 1 ? 'article' : 'articles'}`;
     }
 
-    if (!posts || posts.length === 0) {
+    if (list.length === 0) {
         postsContainer.innerHTML = `
             <div style="padding: 50px 0; text-align: center; color: var(--text-muted);">
                 <p style="font-size: 16px; margin-bottom: 8px; color: var(--text-primary); font-weight: 600;">No articles found</p>
@@ -65,13 +98,13 @@ function renderFeed(posts) {
         return;
     }
 
-    posts.forEach(post => {
+    list.forEach(post => {
         const row = document.createElement("article");
         row.className = "journal-entry-row";
 
         const postHref = `post.html?slug=${post.slug || post._id}`;
         const dateStr = formatDate(post.publishedAt);
-        const label = post.label || "Flutter & Dart";
+        const label = post.label || (Array.isArray(post.tags) && post.tags[0]) || "Flutter & Dart";
 
         row.innerHTML = `
             <div class="journal-entry-date">
@@ -112,13 +145,14 @@ function setupSearch() {
         timer = setTimeout(() => {
             searchQuery = searchInput.value;
             loadAndRenderPosts();
-        }, 250);
+        }, 150);
     });
 }
 
 function formatDate(dateStr) {
     if (!dateStr) return "Recent";
     const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return "Recent";
     return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 

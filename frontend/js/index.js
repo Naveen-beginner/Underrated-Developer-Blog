@@ -1,6 +1,6 @@
 // ==========================================================================
 // UNDERRATED DEVELOPER - CLEAN EDITORIAL HOME RUNTIME
-// Directly fetches and renders live database posts
+// Directly fetches and renders live database posts with Instant SWR Cache
 // ==========================================================================
 
 import { fetchAllPosts } from './api.js';
@@ -11,13 +11,28 @@ const featuredPostCard = document.getElementById("featured-post-card");
 async function loadHomeContent() {
     try {
         const posts = await fetchAllPosts();
-        renderFeaturedCard(posts);
-        renderJournalEntries(posts);
+        if (posts && posts.length > 0) {
+            renderFeaturedCard(posts);
+            renderJournalEntries(posts);
+        } else {
+            renderFeaturedCard([]);
+            renderJournalEntries([]);
+        }
     } catch (e) {
+        console.warn('Error loading home content:', e);
         renderFeaturedCard([]);
         renderJournalEntries([]);
     }
 }
+
+// Reactive SWR listener: update immediately when background sync completes
+window.addEventListener('ud:posts-synced', (e) => {
+    const freshPosts = e.detail;
+    if (Array.isArray(freshPosts) && freshPosts.length > 0) {
+        renderFeaturedCard(freshPosts);
+        renderJournalEntries(freshPosts);
+    }
+});
 
 function renderFeaturedCard(posts) {
     if (!featuredPostCard) return;

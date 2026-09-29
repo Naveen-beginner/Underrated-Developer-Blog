@@ -1,1 +1,133 @@
-[]
+[
+  {
+    "_id": "6abbb8ec3d6d098256bfb122",
+    "slug": "mastering-flutter-desktop-win32-ffi-native-engine",
+    "author": {
+      "name": "Naveen Chandra Kowshik",
+      "username": "Naveen-beginner"
+    },
+    "label": "Flutter & Dart",
+    "published": true,
+    "publishedAt": "2026-09-29T13:11:05.893Z",
+    "sections": [
+      {
+        "title": "Architectural Foundations",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "data": {
+              "content": "When engineering desktop-grade software with Flutter, cold starts and native thread isolates are paramount."
+            }
+          }
+        ]
+      }
+    ],
+    "shortDescription": "A technical deep-dive into building high-performance Windows desktop applications with Flutter.",
+    "tags": ["Flutter", "Dart", "Desktop", "FFI"],
+    "title": "Mastering Flutter Desktop: Win32 FFI & Native Engine",
+    "updatedAt": "2026-09-29T13:18:58.912Z",
+    "readTime": "4 min read"
+  },
+  {
+    "_id": "6abbb6c43d6d098256bfb05e",
+    "slug": "html-basic-web-structure",
+    "author": {
+      "name": "Naveen Chandra Kowshik",
+      "username": "Naveen-beginner"
+    },
+    "label": "Web Tech",
+    "published": true,
+    "publishedAt": "2026-09-29T12:13:02.273Z",
+    "sections": [
+      {
+        "title": "Architectural Foundations of Flutter Desktop",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "data": {
+              "content": "When engineering desktop-grade software with Flutter, the traditional mobile mental model fails. Desktop users <a href=\"lknwef\" style=\"background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; padding: 2px 5px; border-radius: 3px;\">expect </a><i><b></b></i><strong>instant cold startups</strong>, negligible memory footprints, and zero stutter during intense file system I/O.<code style=\"background: rgb(241, 245, 249); padding: 2px 5px; border-radius: 3px; font-family: var(--font-mono);\"></code>"
+            }
+          },
+          {
+            "type": "callout",
+            "data": {
+              "title": "GDE Pro Tip: Const Canonicalization",
+              "content": "Always use const constructors wherever possible in complex tree structures. The Dart VM canonicalizes these instances at compile time, eliminating unnecessary garbage collector pressure."
+            }
+          },
+          {
+            "type": "code",
+            "data": {
+              "language": "dart",
+              "filename": "lib/core/isolate_worker.dart",
+              "code": "import 'dart:isolate';\n\nclass DesktopWorker {\n  static Future<T> runInBackground<T, R>(T Function(R) task, R param) async {\n    final port = ReceivePort();\n    await Isolate.spawn(_entryPoint, [port.sendPort, task, param]);\n    return await port.first as T;\n  }\n\n  static void _entryPoint(List<dynamic> args) {\n    final sendPort = args[0] as SendPort;\n    final task = args[1] as Function;\n    final param = args[2];\n    final result = task(param);\n    sendPort.send(result);\n  }\n}"
+            }
+          },
+          {
+            "type": "list",
+            "data": {
+              "ordered": false,
+              "items": ["Naveen", "Paul", "ok ra", "e;fnwe"]
+            }
+          },
+          {
+            "type": "paragraph",
+            "data": {
+              "content": "qwlknfwe fl efw"
+            }
+          },
+          {
+            "type": "subheading",
+            "data": {
+              "content": "wekfnwegw"
+            }
+          },
+          {
+            "type": "callout",
+            "data": {
+              "title": "GDE Pro Tip",
+              "content": "ewklfnweklf ewf"
+            }
+          },
+          {
+            "type": "quote",
+            "data": {
+              "text": "efknwelfw",
+              "citation": ""
+            }
+          },
+          {
+            "type": "code",
+            "data": {
+              "language": "dart",
+              "filename": "lib/main.dart",
+              "code": "ew;fknewlkewljf w v dvlvnrlkvnre"
+            }
+          }
+        ]
+      },
+      {
+        "title": "New Section",
+        "blocks": [
+          {
+            "type": "subheading",
+            "data": {
+              "content": "lkewnfljrg"
+            }
+          },
+          {
+            "type": "paragraph",
+            "data": {
+              "content": "s;ledm;egfreg"
+            }
+          }
+        ]
+      }
+    ],
+    "shortDescription": "A technical architectural deep-dive into building high-performance Windows desktop applications with Flutter and compiled C++ runtimes.",
+    "tags": ["Web Tech"],
+    "title": "Mastering Flutter Desktop: Isolates, Win32 FFI & Native Performance",
+    "updatedAt": "2026-09-29T13:18:58.979Z",
+    "readTime": "1 min read"
+  }
+]
