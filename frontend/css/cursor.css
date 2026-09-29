@@ -67,11 +67,12 @@
     }
 
     [data-theme="dark"] .canva-cursor-arrow path {
-        fill: #000000;
-        stroke: #ffffff;
+        fill: #ffffff;
+        stroke: #000000;
+        stroke-width: 1.5;
     }
 
-    /* Canva User Pill Badge - Pure Black background with crisp White text */
+    /* Canva User Pill Badge - Pure Black background with crisp White text in light theme */
     .canva-cursor-tag {
         position: absolute;
         top: 15px;
@@ -96,11 +97,12 @@
         transition: background-color 0.2s ease, transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease, box-shadow 0.2s ease;
     }
 
+    /* Dark theme: White cursor label with crisp Black text */
     [data-theme="dark"] .canva-cursor-tag {
-        background: #000000;
-        color: #ffffff;
-        border-color: rgba(255, 255, 255, 0.3);
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+        background: #ffffff;
+        color: #000000;
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
     }
 
     /* Live Pulse Status Dot in Pill */
@@ -113,6 +115,11 @@
         flex-shrink: 0;
         box-shadow: 0 0 6px #22c55e;
         animation: canvaDotPulse 2s infinite ease-in-out;
+    }
+
+    [data-theme="dark"] .canva-cursor-dot {
+        background: #16a34a;
+        box-shadow: 0 0 5px rgba(22, 163, 74, 0.5);
     }
 
     @keyframes canvaDotPulse {
@@ -145,10 +152,15 @@
     }
 
     [data-theme="dark"] .canva-cursor-root.is-hovering .canva-cursor-tag {
-        background: #000000;
-        color: #ffffff;
-        border-color: rgba(255, 255, 255, 0.45);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.7);
+        background: #ffffff;
+        color: #000000;
+        border-color: rgba(0, 0, 0, 0.35);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+    }
+
+    [data-theme="dark"] .canva-cursor-root.is-hovering .canva-cursor-arrow path {
+        fill: #ffffff;
+        stroke: #000000;
     }
 
     /* Click Active State (Snappy micro-dip & bounce) */
