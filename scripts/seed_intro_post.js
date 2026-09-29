@@ -1,0 +1,224 @@
+import { MongoClient } from 'mongodb';
+import fs from 'node:fs';
+import path from 'node:path';
+
+const uri = 'mongodb+srv://rakurthikowshik_db_user:lYGwM504rBJ2cqw9@cluster0.e7nzofn.mongodb.net/blog-underrated?appName=Cluster0';
+
+const introPost = {
+  _id: "671e9a1c1d84e5b2931a0101",
+  slug: "welcome-to-underrated-developer-from-idea-to-production",
+  title: "Welcome to Underrated Developer: Real-World Engineering from Idea to Production",
+  label: "Engineering Roadmap",
+  tags: [
+    "Flutter",
+    "Dart",
+    "Android",
+    "Windows",
+    "Google Play",
+    "AI Agents",
+    "MongoDB",
+    "Chrome Extensions",
+    "Open Source"
+  ],
+  readTime: "6 min read",
+  author: {
+    name: "Naveen Chandra Kowshik",
+    username: "Naveen-beginner"
+  },
+  shortDescription: "Why I built Underrated Developer: a technical platform sharing real-world software engineering across Flutter & Dart, Windows Win32 FFI, Play Store publishing, autonomous AI agents with Google SDK, full-stack web, and open-source npm contributions.",
+  published: true,
+  publishedAt: new Date().toISOString(),
+  views: 1,
+  sections: [
+    {
+      title: "1. The Genesis: Why Underrated Developer Exists",
+      blocks: [
+        {
+          type: "paragraph",
+          data: {
+            content: "Welcome to <strong>Underrated Developer</strong>! I'm <strong>Naveen Chandra Kowshik</strong>, and together with my co-founder <strong>Santhosh Paul</strong> at <strong>Team 4FrndTech</strong>, we built this platform with a clear mission: <em>to bridge the gap between basic coding tutorials and real-world, battle-tested software engineering</em>."
+          }
+        },
+        {
+          type: "paragraph",
+          data: {
+            content: "Most educational tech resources stop after building a toy app. But real engineering begins when you take an idea from scratch and push it all the way to production: architecting clean codebases, managing databases, acquiring domains, configuring DNS, containerizing services, deploying to app stores, and keeping systems fast, secure, and resilient under real-world load."
+          }
+        },
+        {
+          type: "callout",
+          data: {
+            title: "The Underrated Developer Mindset",
+            content: "An underrated developer isn't defined by fancy titles or viral trends. It's about deep technical curiosity, craftsmanship, and shipping complete, end-to-end systems that genuinely work in production."
+          }
+        }
+      ]
+    },
+    {
+      title: "2. Mastering Flutter & Dart: Cross-Platform at Native Speed",
+      blocks: [
+        {
+          type: "paragraph",
+          data: {
+            content: "At the core of this publication is deep-dive engineering in <strong>Flutter and the Dart SDK</strong> across multiple platforms:"
+          }
+        },
+        {
+          type: "list",
+          data: {
+            ordered: false,
+            items: [
+              "<strong>Production Android Engineering</strong>: Keystore generation, ProGuard/R8 obfuscation, Gradle build tuning, handling Android 14/15 target SDK mandates, and overcoming the strict Google Play 14-day closed testing hurdle with 20 opt-in testers.",
+              "<strong>Windows Desktop Applications</strong>: Moving beyond standard UI into high-performance desktop software using Win32 C++ FFI interop, custom native window chrome, thread isolates for non-blocking file I/O, and MSIX packaging.",
+              "<strong>Architecture & State Management</strong>: Scalable layered architecture separating UI, domain logic, and data layers with zero unnecessary widget rebuilds and strict memory leak prevention."
+            ]
+          }
+        },
+        {
+          type: "code",
+          data: {
+            language: "dart",
+            filename: "lib/core/native_engine_bridge.dart",
+            code: "import 'dart:ffi' as ffi;\nimport 'dart:io' show Platform;\n\n// Native Win32 C++ dynamic engine link\ntypedef NativeInitFn = ffi.Int32 Function(ffi.Pointer<ffi.Utf8> appKey);\ntypedef DartInitFn = int Function(ffi.Pointer<ffi.Utf8> appKey);\n\nclass NativeEngineBridge {\n  static void initialize() {\n    if (Platform.isWindows) {\n      final dylib = ffi.DynamicLibrary.open('native_engine.dll');\n      final DartInitFn initEngine = dylib\n          .lookup<ffi.NativeFunction<NativeInitFn>>('InitEngine')\n          .asFunction();\n      // Direct Win32 high-performance hardware thread binding\n    }\n  }\n}"
+          }
+        }
+      ]
+    },
+    {
+      title: "3. Full-Stack Web Architecture, MongoDB & Domain Infrastructure",
+      blocks: [
+        {
+          type: "paragraph",
+          data: {
+            content: "Great software needs resilient infrastructure. Here we share practical architectures for deploying and running production web systems:"
+          }
+        },
+        {
+          type: "list",
+          data: {
+            ordered: false,
+            items: [
+              "<strong>Domain & DNS Engineering</strong>: Sourcing and purchasing domains, setting up custom Cloudflare DNS routing, Full/Strict SSL/TLS encryption, and resolving canonical CNAME/A records.",
+              "<strong>Serverless Edge APIs & Caching</strong>: Designing globally distributed Cloudflare Workers with multi-tier caching (Edge CDN, Worker memory isolates, and client-side Stale-While-Revalidate) for sub-20ms load times.",
+              "<strong>MongoDB Atlas in Production</strong>: Schema modeling, connection pool management across serverless runtimes, graceful failover, and high-performance indexing."
+            ]
+          }
+        },
+        {
+          type: "quote",
+          data: {
+            text: "Fast loading isn't just a metric; it's the fundamental respect a developer shows to their users' time and bandwidth.",
+            citation: "Naveen Chandra Kowshik"
+          }
+        }
+      ]
+    },
+    {
+      title: "4. Autonomous AI Agents: Google Antigravity & Gemini SDK",
+      blocks: [
+        {
+          type: "paragraph",
+          data: {
+            content: "We are actively exploring the next frontier: <strong>Autonomous AI Agents</strong>. Rather than building generic chatbot wrappers, we demonstrate how to build proactive agentic loops using the <strong>Google Generative AI SDK in Python and TypeScript</strong>."
+          }
+        },
+        {
+          type: "list",
+          data: {
+            ordered: false,
+            items: [
+              "<strong>Structured Tool & Function Calling</strong>: Giving models deterministic agency to run local commands, query databases, and interact with operating system APIs.",
+              "<strong>Multi-Turn ReAct Reasoning</strong>: Orchestrating iterative planning, tool dispatching, error self-correction, and autonomous execution pipelines.",
+              "<strong>Embedding Agents into Flutter & Web Apps</strong>: Real-time streaming with Gemini Live WebSocket APIs and native client interop."
+            ]
+          }
+        },
+        {
+          type: "code",
+          data: {
+            language: "typescript",
+            filename: "agent/tools/databaseTool.ts",
+            code: "import { GoogleGenAI, Type } from '@google/genai';\n\n// Autonomous Agent tool definition for database introspection\nexport const queryArticlesTool = {\n  name: 'queryArticles',\n  description: 'Searches articles database by keyword or category tag',\n  parameters: {\n    type: Type.OBJECT,\n    properties: {\n      tag: { type: Type.STRING, description: 'Category tag' },\n      keyword: { type: Type.STRING, description: 'Search term' },\n    },\n  },\n};"
+          }
+        }
+      ]
+    },
+    {
+      title: "5. Chrome Extensions, NPM Contributions & Developer Tooling",
+      blocks: [
+        {
+          type: "paragraph",
+          data: {
+            content: "Building real tools for other developers is one of the highest forms of engineering leverage. In upcoming articles, we will cover:"
+          }
+        },
+        {
+          type: "list",
+          data: {
+            ordered: false,
+            items: [
+              "<strong>Manifest V3 Chrome Extensions</strong>: Service workers, content scripts, DeclarativeNetRequest rules, and Chrome Web Store review compliance.",
+              "<strong>Contributing to NPM & Open Source</strong>: Packaging reusable TypeScript/JavaScript libraries, configuring automated CI/CD releases with GitHub Actions, semantic versioning, and maintenance.",
+              "<strong>Developer Workflows & Automation</strong>: Custom CLI tooling, build automation scripts, and maintaining long-lived production apps."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      title: "6. From Idea to Application: The Roadmap Ahead",
+      blocks: [
+        {
+          type: "paragraph",
+          data: {
+            content: "Every single project featured on Underrated Developer follows our battle-tested engineering blueprint: <strong>Concept ➔ Architecture ➔ Local Prototype ➔ Polish & Security ➔ Global Edge Deployment ➔ Maintenance</strong>."
+          }
+        },
+        {
+          type: "paragraph",
+          data: {
+            content: "Whether you're building your first Flutter desktop engine, releasing a mobile app to the Play Store, publishing an npm package, or orchestrating multi-agent AI systems, you'll find the unvarnished, code-first blueprint right here."
+          }
+        },
+        {
+          type: "callout",
+          data: {
+            title: "Join the Journey",
+            content: "Bookmark <strong>underrateddev.com</strong>, explore our articles, and build with us. If you have questions or want to collaborate, feel free to reach out to Naveen & Santhosh Paul. Let's build things that matter!"
+          }
+        }
+      ]
+    }
+  ]
+};
+
+async function main() {
+    console.log('Connecting to MongoDB Atlas...');
+    const client = new MongoClient(uri);
+    try {
+        await client.connect();
+        const db = client.db('blog-underrated');
+        const coll = db.collection('posts');
+
+        // 1. Delete dummy posts
+        const deleteRes = await coll.deleteMany({});
+        console.log(`Deleted ${deleteRes.deletedCount} old posts from MongoDB.`);
+
+        // 2. Insert new introduction post
+        const insertRes = await coll.insertOne(introPost);
+        console.log(`Inserted introduction post: ${introPost.slug} (ID: ${insertRes.insertedId})`);
+
+        // 3. Update frontend/data/posts.json with the new post
+        const postsJsonPath = path.resolve('frontend/data/posts.json');
+        fs.writeFileSync(postsJsonPath, JSON.stringify([introPost], null, 2), 'utf-8');
+        console.log(`Updated ${postsJsonPath} with the introduction post.`);
+
+        console.log('Operation completed successfully!');
+    } catch (err) {
+        console.error('Migration failed:', err);
+    } finally {
+        await client.close();
+    }
+}
+
+main();
