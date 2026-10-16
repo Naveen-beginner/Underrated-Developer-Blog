@@ -53,7 +53,7 @@ function renderFeaturedCard(posts) {
     }
 
     const featured = posts[0];
-    const postHref = `post.html?slug=${featured.slug || featured._id}`;
+    const postHref = `/post?slug=${encodeURIComponent(featured.slug || featured._id)}`;
     const authorName = featured.author?.name || (typeof featured.author === 'string' ? featured.author : 'Naveen Chandra Kowshik');
     const label = featured.label || (Array.isArray(featured.tags) && featured.tags[0]) || 'Featured Article';
 
@@ -93,7 +93,7 @@ function renderJournalEntries(posts) {
         const row = document.createElement("article");
         row.className = "journal-entry-row";
 
-        const postHref = `post.html?slug=${post.slug || post._id}`;
+        const postHref = `/post?slug=${encodeURIComponent(post.slug || post._id)}`;
         const dateStr = formatDate(post.publishedAt);
         const label = post.label || (Array.isArray(post.tags) && post.tags[0]) || "Article";
 

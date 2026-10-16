@@ -3,7 +3,7 @@ class AppNavBar extends HTMLElement {
         this.innerHTML = `
         <header class="navbar-wrapper">
             <nav class="navbar" aria-label="Main Navigation">
-                <a href="index.html" class="nav-brand" aria-label="Underrated Developer Home">
+                <a href="/" class="nav-brand" aria-label="Underrated Developer Home">
                     <img src="assets/favicons/official_logo_branding_transparent.png" alt="Underrated Developer Logo" class="brand-logo-img" width="48" height="48">
                     <div class="brand-text-col">
                         <span class="brand-name">Underrated Developer</span>
@@ -30,19 +30,19 @@ class AppNavBar extends HTMLElement {
                     </div>
 
                     <div class="sidebar-links">
-                        <a href="index.html" class="nav-item">
+                        <a href="/" class="nav-item">
                             <span class="material-symbols-outlined nav-item-icon">home</span>
                             <span class="nav-item-text">Home</span>
                         </a>
-                        <a href="blog.html" class="nav-item">
+                        <a href="/blog" class="nav-item">
                             <span class="material-symbols-outlined nav-item-icon">menu_book</span>
                             <span class="nav-item-text">Articles</span>
                         </a>
-                        <a href="author.html" class="nav-item">
+                        <a href="/author" class="nav-item">
                             <span class="material-symbols-outlined nav-item-icon">badge</span>
                             <span class="nav-item-text">About</span>
                         </a>
-                        <a href="support.html" class="nav-item">
+                        <a href="/support" class="nav-item">
                             <span class="material-symbols-outlined nav-item-icon">mail</span>
                             <span class="nav-item-text">Contact</span>
                         </a>
@@ -221,10 +221,11 @@ class AppNavBar extends HTMLElement {
         updateThemeLabel(initialTheme);
 
         // Highlight active link
-        const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+        const currentPath = window.location.pathname.replace(/\/+$/, '') || '/';
+        const cleanPath = currentPath.replace(/\.html$/, '');
         this.querySelectorAll('.nav-item').forEach(link => {
             const href = link.getAttribute('href');
-            if (href === currentPath || (currentPath === '' && href === 'index.html')) {
+            if (href === cleanPath || (cleanPath === '' && href === '/') || (cleanPath === '/index' && href === '/')) {
                 link.classList.add('active');
             }
         });

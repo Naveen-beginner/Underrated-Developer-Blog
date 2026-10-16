@@ -25,10 +25,10 @@ class AppFooter extends HTMLElement {
                 <div class="footer-links-grid">
                     <div class="footer-col">
                         <h4>Explore</h4>
-                        <a href="index.html">Home</a>
-                        <a href="blog.html">Articles</a>
-                        <a href="author.html">About Authors</a>
-                        <a href="support.html">Contact</a>
+                        <a href="/">Home</a>
+                        <a href="/blog">Articles</a>
+                        <a href="/author">About Authors</a>
+                        <a href="/support">Contact</a>
                     </div>
 
                     <div class="footer-col">

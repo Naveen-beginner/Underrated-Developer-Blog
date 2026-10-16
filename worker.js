@@ -219,7 +219,39 @@ async function saveStoredPosts(posts, env) {
     }
 }
 
-async function handleApi(request, env) {
+async function notifySearchEngines(post) {
+    if (!post || !post.slug) return;
+    const postUrl = `https://underrateddev.com/post?slug=${encodeURIComponent(post.slug)}`;
+    const blogUrl = `https://underrateddev.com/blog`;
+    const sitemapUrl = `https://underrateddev.com/sitemap.xml`;
+
+    // 1. IndexNow API (Instant crawl notification for Bing, Yandex, Seznam, Naver)
+    try {
+        await fetch('https://api.indexnow.org/IndexNow', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json; charset=utf-8' },
+            body: JSON.stringify({
+                host: 'underrateddev.com',
+                key: '4frndtech-ud-indexnow-2026',
+                keyLocation: 'https://underrateddev.com/4frndtech-ud-indexnow-2026.txt',
+                urlList: [postUrl, blogUrl, sitemapUrl]
+            })
+        });
+        console.log('IndexNow ping delivered for:', postUrl);
+    } catch (e) {
+        console.warn('IndexNow notice:', e.message);
+    }
+
+    // 2. Google Sitemap Ping
+    try {
+        await fetch(`https://www.google.com/ping?sitemap=${encodeURIComponent(sitemapUrl)}`);
+        console.log('Google sitemap ping delivered');
+    } catch (e) {
+        console.warn('Google ping notice:', e.message);
+    }
+}
+
+async function handleApi(request, env, ctx) {
     const url = new URL(request.url);
     const pathname = url.pathname.replace(/\/+$/, ''); // Strip trailing slash
     const secret = (env && (env.JWT_SECRET || env.ADMIN_PASSWORD)) || 'ud_sec_4frndtech_2026';
@@ -429,6 +461,14 @@ async function handleApi(request, env) {
                 }
                 await saveStoredPosts(posts, env);
 
+                // Auto-notify search engines for instantaneous crawling
+                const notifyPromise = notifySearchEngines(newPost);
+                if (ctx && typeof ctx.waitUntil === 'function') {
+                    ctx.waitUntil(notifyPromise);
+                } else {
+                    notifyPromise.catch(() => {});
+                }
+
                 return jsonResponse({
                     success: true,
                     message: 'Post created and published successfully',
@@ -461,6 +501,14 @@ async function handleApi(request, env) {
 
                 posts[idx] = { ...posts[idx], ...body, updatedAt: new Date().toISOString() };
                 await saveStoredPosts(posts, env);
+
+                // Auto-notify search engines for instantaneous recrawling
+                const notifyPromise = notifySearchEngines(posts[idx]);
+                if (ctx && typeof ctx.waitUntil === 'function') {
+                    ctx.waitUntil(notifyPromise);
+                } else {
+                    notifyPromise.catch(() => {});
+                }
 
                 return jsonResponse({
                     success: true,
@@ -532,16 +580,273 @@ async function handleApi(request, env) {
     }
 }
 
+function formatIsoDate(d) {
+    try {
+        if (!d) return new Date().toISOString().split('T')[0];
+        if (typeof d === 'string') return d.split('T')[0];
+        if (d instanceof Date) return d.toISOString().split('T')[0];
+        return new Date(d).toISOString().split('T')[0];
+    } catch (_) {
+        return new Date().toISOString().split('T')[0];
+    }
+}
+
+async function handleSitemap(request, env) {
+    const origin = 'https://underrateddev.com';
+    const posts = await getStoredPosts(env);
+    const today = new Date().toISOString().split('T')[0];
+
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>${origin}/</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>${origin}/blog</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>${origin}/author</loc>
+    <lastmod>2026-09-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>${origin}/support</loc>
+    <lastmod>2026-09-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+${posts.filter(p => p && p.slug).map(p => {
+    const postDate = formatIsoDate(p.updatedAt || p.publishedAt);
+    return `  <url>
+    <loc>${origin}/post?slug=${encodeURIComponent(p.slug)}</loc>
+    <lastmod>${postDate}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>`;
+}).join('\n')}
+</urlset>`;
+
+    return new Response(xml, {
+        status: 200,
+        headers: {
+            'Content-Type': 'application/xml; charset=UTF-8',
+            'Cache-Control': 'public, max-age=1800, s-maxage=3600, stale-while-revalidate=86400'
+        }
+    });
+}
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+function renderPostBlocksToHtml(sections) {
+    if (!Array.isArray(sections)) return '';
+    return sections.map(sec => {
+        let secHtml = '';
+        if (sec.title) {
+            secHtml += `<h2 class="prose-h2">${escapeHtml(sec.title)}</h2>`;
+        }
+        if (Array.isArray(sec.blocks)) {
+            sec.blocks.forEach(block => {
+                if (!block || !block.type) return;
+                const data = block.data || {};
+                if (block.type === 'paragraph') {
+                    secHtml += `<p class="prose-p">${data.content || ''}</p>`;
+                } else if (block.type === 'subheading' || block.type === 'heading') {
+                    secHtml += `<h3 class="prose-h3">${escapeHtml(data.content || '')}</h3>`;
+                } else if (block.type === 'code') {
+                    const lang = data.language || 'dart';
+                    const filename = data.filename || 'lib/main.dart';
+                    secHtml += `<div class="code-frame"><div class="code-frame-header"><div class="code-title-tag"><span>${escapeHtml(filename)}</span></div></div><pre><code class="language-${escapeHtml(lang)}">${escapeHtml(data.code || '')}</code></pre></div>`;
+                } else if (block.type === 'list') {
+                    const tag = data.ordered ? 'ol' : 'ul';
+                    const items = Array.isArray(data.items) ? data.items.map(it => `<li>${it}</li>`).join('') : '';
+                    secHtml += `<${tag} class="prose-list">${items}</${tag}>`;
+                } else if (block.type === 'callout') {
+                    secHtml += `<div class="prose-callout"><div class="callout-header"><span>${escapeHtml(data.title || 'Architecture Insight')}</span></div><div class="callout-body">${data.content || ''}</div></div>`;
+                } else if (block.type === 'quote') {
+                    secHtml += `<blockquote class="prose-quote"><p class="quote-text">"${escapeHtml(data.text || '')}"</p>${data.citation ? `<cite class="quote-author">— ${escapeHtml(data.citation)}</cite>` : ''}</blockquote>`;
+                }
+            });
+        }
+        return `<section>${secHtml}</section>`;
+    }).join('');
+}
+
+async function handlePostPage(request, env) {
+    const url = new URL(request.url);
+
+    // If request has .html extension, permanently 301 redirect to clean URL /post
+    if (url.pathname.endsWith('.html')) {
+        const cleanUrl = new URL(request.url);
+        cleanUrl.pathname = cleanUrl.pathname.replace(/\.html$/, '');
+        return Response.redirect(cleanUrl.toString(), 301);
+    }
+
+    const slugOrId = (url.searchParams.get('slug') || url.searchParams.get('id') || '').trim();
+
+    // Fetch the raw post.html template from static assets
+    let templateResponse;
+    try {
+        const assetUrl = new URL('/post.html', request.url);
+        templateResponse = await env.ASSETS.fetch(new Request(assetUrl));
+    } catch (e) {
+        return new Response("Asset not found", { status: 404 });
+    }
+
+    if (!templateResponse || !templateResponse.ok) {
+        return templateResponse;
+    }
+
+    if (!slugOrId) {
+        return templateResponse;
+    }
+
+    // Find the post
+    const posts = await getStoredPosts(env);
+    const lower = slugOrId.toLowerCase();
+    const post = posts.find(p => p && ((p.slug && p.slug.toLowerCase() === lower) || (p._id && String(p._id).toLowerCase() === lower)));
+
+    if (!post) {
+        return templateResponse;
+    }
+
+    const title = `${post.title} — Underrated Developer`;
+    const desc = post.shortDescription || post.title;
+    const postCanonical = `https://underrateddev.com/post?slug=${encodeURIComponent(post.slug || post._id)}`;
+    const authorName = post.author?.name || (typeof post.author === 'string' ? post.author : 'Naveen Chandra Kowshik');
+    const readTime = post.readTime || '5 min read';
+    const category = post.label || (Array.isArray(post.tags) && post.tags[0]) || 'Flutter & Dart';
+    const contentHtml = renderPostBlocksToHtml(post.sections);
+
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": post.title,
+        "description": desc,
+        "author": {
+            "@type": "Person",
+            "name": authorName,
+            "url": "https://underrateddev.com/author"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Underrated Developer",
+            "url": "https://underrateddev.com/",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://underrateddev.com/assets/favicons/official_logo_branding_transparent.png"
+            }
+        },
+        "datePublished": post.publishedAt || new Date().toISOString(),
+        "dateModified": post.updatedAt || post.publishedAt || new Date().toISOString(),
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": postCanonical
+        }
+    };
+
+    if (typeof HTMLRewriter === 'undefined') {
+        let html = await templateResponse.text();
+        html = html.replace(/<title>.*?<\/title>/, `<title>${escapeHtml(title)}</title>`);
+        html = html.replace(/id="canonical-url" href=".*?"/, `id="canonical-url" href="${postCanonical}"`);
+        html = html.replace(/id="og-title" content=".*?"/, `id="og-title" content="${escapeHtml(title)}"`);
+        html = html.replace(/id="og-description" content=".*?"/, `id="og-description" content="${escapeHtml(desc)}"`);
+        html = html.replace(/id="og-url" content=".*?"/, `id="og-url" content="${postCanonical}"`);
+        html = html.replace(/<h1 class="article-headline" id="post-title">.*?<\/h1>/, `<h1 class="article-headline" id="post-title">${escapeHtml(post.title)}</h1>`);
+        html = html.replace(/<div class="article-prose" id="main-content">[\s\S]*?<\/div>/, `<div class="article-prose" id="main-content">${contentHtml}</div>`);
+        html = html.replace('</head>', `    <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>\n</head>`);
+        return new Response(html, {
+            status: 200,
+            headers: {
+                'Content-Type': 'text/html; charset=UTF-8',
+                'Cache-Control': 'public, max-age=60, s-maxage=300, stale-while-revalidate=86400'
+            }
+        });
+    }
+
+    let rewriter = new HTMLRewriter()
+        .on('title', { element(e) { e.setInnerContent(escapeHtml(title)); } })
+        .on('meta[name="description"]', { element(e) { e.setAttribute('content', desc); } })
+        .on('#canonical-url', { element(e) { e.setAttribute('href', postCanonical); } })
+        .on('#og-title', { element(e) { e.setAttribute('content', title); } })
+        .on('#og-description', { element(e) { e.setAttribute('content', desc); } })
+        .on('#og-url', { element(e) { e.setAttribute('content', postCanonical); } })
+        .on('#tw-title', { element(e) { e.setAttribute('content', title); } })
+        .on('#tw-description', { element(e) { e.setAttribute('content', desc); } })
+        .on('#post-title', { element(e) { e.setInnerContent(escapeHtml(post.title)); } })
+        .on('#post-category', { element(e) { e.setInnerContent(escapeHtml(category)); } })
+        .on('#post-read-time', { element(e) { e.setInnerContent(escapeHtml(readTime)); } })
+        .on('#post-author', { element(e) { e.setInnerContent(escapeHtml(authorName)); } })
+        .on('#short-description-text', { element(e) { e.setInnerContent(escapeHtml(desc)); } })
+        .on('#main-content', { element(e) { e.setInnerContent(contentHtml, { html: true }); } })
+        .on('head', {
+            element(e) {
+                e.append(`\n    <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>\n`, { html: true });
+            }
+        });
+
+    return rewriter.transform(templateResponse);
+}
+
 export default {
     async fetch(request, env, ctx) {
         try {
             const url = new URL(request.url);
-            // Intercept API routes
+
+            // 1. Intercept API routes
             if (url.pathname.startsWith('/api/')) {
-                return await handleApi(request, env);
+                return await handleApi(request, env, ctx);
             }
 
-            // Serve static assets via Cloudflare Workers Assets
+            // 2. Dynamic Live Sitemap (Always includes all MongoDB posts & clean URLs)
+            if (url.pathname === '/sitemap.xml') {
+                return await handleSitemap(request, env);
+            }
+
+            // 3. IndexNow Key Verification Endpoint
+            if (url.pathname === '/4frndtech-ud-indexnow-2026.txt') {
+                return new Response('4frndtech-ud-indexnow-2026', {
+                    headers: { 'Content-Type': 'text/plain; charset=UTF-8' }
+                });
+            }
+
+            // 4. Permanent 301 redirects for legacy .html paths
+            if (url.pathname === '/index.html') {
+                return Response.redirect(`${url.origin}/`, 301);
+            }
+            if (url.pathname === '/blog.html') {
+                return Response.redirect(`${url.origin}/blog${url.search}`, 301);
+            }
+            if (url.pathname === '/author.html') {
+                return Response.redirect(`${url.origin}/author${url.search}`, 301);
+            }
+            if (url.pathname === '/support.html') {
+                return Response.redirect(`${url.origin}/support${url.search}`, 301);
+            }
+            if (url.pathname === '/post.html') {
+                return Response.redirect(`${url.origin}/post${url.search}`, 301);
+            }
+
+            // 5. SEO Pre-rendered Article View (Full metadata + body HTML for search crawlers)
+            if (url.pathname === '/post') {
+                return await handlePostPage(request, env);
+            }
+
+            // 6. Serve static assets via Cloudflare Workers Assets
             if (env && env.ASSETS && typeof env.ASSETS.fetch === 'function') {
                 return await env.ASSETS.fetch(request);
             }

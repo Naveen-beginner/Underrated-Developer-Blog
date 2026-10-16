@@ -102,7 +102,7 @@ function renderFeed(posts) {
         const row = document.createElement("article");
         row.className = "journal-entry-row";
 
-        const postHref = `post.html?slug=${post.slug || post._id}`;
+        const postHref = `/post?slug=${encodeURIComponent(post.slug || post._id)}`;
         const dateStr = formatDate(post.publishedAt);
         const label = post.label || (Array.isArray(post.tags) && post.tags[0]) || "Flutter & Dart";
 

@@ -32,14 +32,14 @@ async function loadArticle() {
     }
 
     if (!targetId) {
-        mainContent.innerHTML = `<p style="padding: 40px 0; color: var(--text-dim); text-align: center;">No article found. <a href="blog.html" style="color: var(--accent-blue);">Back to articles</a></p>`;
+        mainContent.innerHTML = `<p style="padding: 40px 0; color: var(--text-dim); text-align: center;">No article found. <a href="/blog" style="color: var(--accent-blue);">Back to articles</a></p>`;
         return;
     }
 
     const post = await fetchPostByIdOrSlug(targetId);
 
     if (!post) {
-        mainContent.innerHTML = `<p style="padding: 40px 0; color: var(--text-dim); text-align: center;">Article not found. <a href="blog.html" style="color: var(--accent-blue);">Back to articles</a></p>`;
+        mainContent.innerHTML = `<p style="padding: 40px 0; color: var(--text-dim); text-align: center;">Article not found. <a href="/blog" style="color: var(--accent-blue);">Back to articles</a></p>`;
         return;
     }
 
@@ -244,7 +244,7 @@ function updateSEO(post) {
     const twDesc = document.getElementById("tw-description");
 
     const desc = post.shortDescription || post.title;
-    const currentUrl = `${window.location.origin}/post.html?slug=${post.slug || post._id}`;
+    const currentUrl = `${window.location.origin}/post?slug=${encodeURIComponent(post.slug || post._id)}`;
 
     if (metaDesc) metaDesc.content = desc;
     if (canonical) canonical.href = currentUrl;
@@ -283,7 +283,7 @@ function renderAuthorSignoff(post) {
                 <div class="signoff-links" id="signoff-links">
                     <a href="mailto:santhoshpaul861@gmail.com"><i class="fa-solid fa-envelope"></i> Email Santhosh</a>
                     <a href="https://devfrnd.netlify.app" target="_blank" rel="noopener"><i class="fa-solid fa-globe"></i> Portfolio</a>
-                    <a href="author.html#author-paul"><i class="fa-solid fa-user"></i> Founder Profile</a>
+                    <a href="/author#author-paul"><i class="fa-solid fa-user"></i> Founder Profile</a>
                 </div>
             </div>
         `;
@@ -296,7 +296,7 @@ function renderAuthorSignoff(post) {
                     Founders of Team 4FrndTech &amp; Underrated Developer (#WeAreUnderratedDevs). Building cross-platform Flutter engines, Play Store apps, and autonomous agents.
                 </p>
                 <div class="signoff-links" id="signoff-links">
-                    <a href="author.html"><i class="fa-solid fa-users"></i> Meet The Founders</a>
+                    <a href="/author"><i class="fa-solid fa-users"></i> Meet The Founders</a>
                     <a href="https://github.com/Naveen-beginner" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i> GitHub</a>
                     <a href="mailto:naveen191496@gmail.com"><i class="fa-solid fa-envelope"></i> Contact Naveen</a>
                     <a href="mailto:santhoshpaul861@gmail.com"><i class="fa-solid fa-envelope"></i> Contact Santhosh</a>
@@ -315,7 +315,7 @@ function renderAuthorSignoff(post) {
                     <a href="https://github.com/Naveen-beginner" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i> GitHub</a>
                     <a href="https://play.google.com/store/apps/dev?id=8374043554473360551" target="_blank" rel="noopener"><i class="fa-brands fa-google-play"></i> Play Store Profile</a>
                     <a href="mailto:naveen191496@gmail.com"><i class="fa-solid fa-envelope"></i> Email Naveen</a>
-                    <a href="author.html#author-naveen"><i class="fa-solid fa-user"></i> Founder Profile</a>
+                    <a href="/author#author-naveen"><i class="fa-solid fa-user"></i> Founder Profile</a>
                 </div>
             </div>
         `;
