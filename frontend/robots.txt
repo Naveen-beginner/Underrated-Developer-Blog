@@ -2,4 +2,12 @@ User-agent: *
 Allow: /
 Disallow: /editors/
 
+User-agent: Googlebot
+Allow: /
+Disallow: /editors/
+
+User-agent: Bingbot
+Allow: /
+Disallow: /editors/
+
 Sitemap: https://underrateddev.com/sitemap.xml

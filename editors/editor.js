@@ -15,7 +15,7 @@ let postData = {
     _id: 'draft_' + Date.now(),
     title: "Mastering Flutter Desktop: Isolates, Win32 FFI & Native Performance",
     label: "Flutter & Dart",
-    tags: ["Flutter", "Dart", "Desktop", "Windows", "FFI", "GDE Aspirant"],
+    tags: ["Flutter", "Dart", "Desktop", "Windows", "FFI", "Architecture"],
     shortDescription: "A technical architectural deep-dive into building high-performance Windows desktop applications with Flutter and compiled C++ runtimes.",
     author: {
         name: founderSession.founder?.name || "Naveen Chandra Kowshik",
@@ -34,7 +34,7 @@ let postData = {
                 {
                     type: "callout",
                     data: {
-                        title: "GDE Pro Tip: Const Canonicalization",
+                        title: "Architecture Insight: Const Canonicalization",
                         content: "Always use const constructors wherever possible in complex tree structures. The Dart VM canonicalizes these instances at compile time, eliminating unnecessary garbage collector pressure."
                     }
                 },
@@ -447,8 +447,8 @@ function renderBlock(section, block, sIdx, bIdx) {
 
         const title = document.createElement("input");
         title.className = "callout-head-input";
-        title.placeholder = "Pro Tip Title...";
-        title.value = block.data.title || "GDE Architecture Tip";
+        title.placeholder = "Insight Title...";
+        title.value = block.data.title || "Architecture Insight";
         title.addEventListener("input", () => { block.data.title = title.value; scheduleAutosave(); });
 
         const body = document.createElement("textarea");
@@ -523,7 +523,7 @@ function addBlock(sectionIdx, type) {
     if (type === "paragraph" || type === "subheading") newBlock.data.content = "";
     else if (type === "code") newBlock.data = { language: "dart", filename: "lib/main.dart", code: "" };
     else if (type === "list") newBlock.data = { ordered: false, items: [""] };
-    else if (type === "callout") newBlock.data = { title: "GDE Pro Tip", content: "" };
+    else if (type === "callout") newBlock.data = { title: "Architecture Insight", content: "" };
     else if (type === "quote") newBlock.data = { text: "", citation: "" };
 
     sec.blocks.push(newBlock);

@@ -732,32 +732,100 @@ async function handlePostPage(request, env) {
     const category = post.label || (Array.isArray(post.tags) && post.tags[0]) || 'Flutter & Dart';
     const contentHtml = renderPostBlocksToHtml(post.sections);
 
+    // Compute word count for search engines
+    let totalWords = 0;
+    if (Array.isArray(post.sections)) {
+        post.sections.forEach(s => {
+            if (s.title) totalWords += s.title.split(/\s+/).filter(Boolean).length;
+            if (Array.isArray(s.blocks)) {
+                s.blocks.forEach(b => {
+                    const text = b.data?.content || b.data?.code || b.data?.text || '';
+                    totalWords += String(text).replace(/<[^>]*>/g, '').split(/\s+/).filter(Boolean).length;
+                });
+            }
+        });
+    }
+    const wordCount = Math.max(250, totalWords);
+    const publishedDate = post.publishedAt || new Date().toISOString();
+    const modifiedDate = post.updatedAt || publishedDate;
+
+    // Comprehensive Schema.org BlogPosting + BreadcrumbList Graph
     const jsonLd = {
         "@context": "https://schema.org",
-        "@type": "BlogPosting",
-        "headline": post.title,
-        "description": desc,
-        "author": {
-            "@type": "Person",
-            "name": authorName,
-            "url": "https://underrateddev.com/author"
-        },
-        "publisher": {
-            "@type": "Organization",
-            "name": "Underrated Developer",
-            "url": "https://underrateddev.com/",
-            "logo": {
-                "@type": "ImageObject",
-                "url": "https://underrateddev.com/assets/favicons/official_logo_branding_transparent.png"
+        "@graph": [
+            {
+                "@type": "BlogPosting",
+                "@id": `${postCanonical}#article`,
+                "isPartOf": {
+                    "@type": "WebSite",
+                    "@id": "https://underrateddev.com/#website",
+                    "name": "Underrated Developer",
+                    "url": "https://underrateddev.com/"
+                },
+                "headline": post.title,
+                "description": desc,
+                "url": postCanonical,
+                "mainEntityOfPage": {
+                    "@type": "WebPage",
+                    "@id": postCanonical
+                },
+                "author": {
+                    "@type": "Person",
+                    "name": authorName,
+                    "url": "https://underrateddev.com/author"
+                },
+                "publisher": {
+                    "@type": "Organization",
+                    "@id": "https://underrateddev.com/#organization",
+                    "name": "Underrated Developer",
+                    "url": "https://underrateddev.com/",
+                    "logo": {
+                        "@type": "ImageObject",
+                        "url": "https://underrateddev.com/assets/favicons/official_logo_branding_transparent.png"
+                    }
+                },
+                "datePublished": publishedDate,
+                "dateModified": modifiedDate,
+                "articleSection": category,
+                "keywords": Array.isArray(post.tags) ? post.tags.join(', ') : category,
+                "wordCount": wordCount,
+                "inLanguage": "en-US",
+                "image": "https://underrateddev.com/assets/branding.png"
+            },
+            {
+                "@type": "BreadcrumbList",
+                "@id": `${postCanonical}#breadcrumb`,
+                "itemListElement": [
+                    {
+                        "@type": "ListItem",
+                        "position": 1,
+                        "name": "Home",
+                        "item": "https://underrateddev.com/"
+                    },
+                    {
+                        "@type": "ListItem",
+                        "position": 2,
+                        "name": "Articles",
+                        "item": "https://underrateddev.com/blog"
+                    },
+                    {
+                        "@type": "ListItem",
+                        "position": 3,
+                        "name": post.title,
+                        "item": postCanonical
+                    }
+                ]
             }
-        },
-        "datePublished": post.publishedAt || new Date().toISOString(),
-        "dateModified": post.updatedAt || post.publishedAt || new Date().toISOString(),
-        "mainEntityOfPage": {
-            "@type": "WebPage",
-            "@id": postCanonical
-        }
+        ]
     };
+
+    const extraArticleMeta = `
+    <meta property="article:published_time" content="${publishedDate}">
+    <meta property="article:modified_time" content="${modifiedDate}">
+    <meta property="article:section" content="${escapeHtml(category)}">
+    <meta property="article:author" content="${escapeHtml(authorName)}">
+    <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+`;
 
     if (typeof HTMLRewriter === 'undefined') {
         let html = await templateResponse.text();
@@ -768,7 +836,7 @@ async function handlePostPage(request, env) {
         html = html.replace(/id="og-url" content=".*?"/, `id="og-url" content="${postCanonical}"`);
         html = html.replace(/<h1 class="article-headline" id="post-title">.*?<\/h1>/, `<h1 class="article-headline" id="post-title">${escapeHtml(post.title)}</h1>`);
         html = html.replace(/<div class="article-prose" id="main-content">[\s\S]*?<\/div>/, `<div class="article-prose" id="main-content">${contentHtml}</div>`);
-        html = html.replace('</head>', `    <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>\n</head>`);
+        html = html.replace('</head>', `${extraArticleMeta}\n</head>`);
         return new Response(html, {
             status: 200,
             headers: {
@@ -795,7 +863,7 @@ async function handlePostPage(request, env) {
         .on('#main-content', { element(e) { e.setInnerContent(contentHtml, { html: true }); } })
         .on('head', {
             element(e) {
-                e.append(`\n    <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>\n`, { html: true });
+                e.append(extraArticleMeta, { html: true });
             }
         });
 

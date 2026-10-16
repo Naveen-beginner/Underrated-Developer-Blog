@@ -2,6 +2,30 @@ import post from '../models/post_model.js'
 import HTTP_STATUS_CODES from '../utils/http_status_codes.js'
 import MESSAGES from '../utils/messages.js'
 
+const notifySearchEngines = async (postItem) => {
+    if (!postItem || !postItem.slug) return;
+    const postUrl = `https://underrateddev.com/post?slug=${encodeURIComponent(postItem.slug)}`;
+    const blogUrl = `https://underrateddev.com/blog`;
+    const sitemapUrl = `https://underrateddev.com/sitemap.xml`;
+
+    try {
+        await fetch('https://api.indexnow.org/IndexNow', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json; charset=utf-8' },
+            body: JSON.stringify({
+                host: 'underrateddev.com',
+                key: '4frndtech-ud-indexnow-2026',
+                keyLocation: 'https://underrateddev.com/4frndtech-ud-indexnow-2026.txt',
+                urlList: [postUrl, blogUrl, sitemapUrl]
+            })
+        });
+    } catch (_) {}
+
+    try {
+        await fetch(`https://www.google.com/ping?sitemap=${encodeURIComponent(sitemapUrl)}`);
+    } catch (_) {}
+};
+
 const generateSlug = (title) => {
     return title
         .toLowerCase()
@@ -51,6 +75,8 @@ export const createPost = async (req, res) => {
             sections,
             dyks: dyks || []
         })
+
+        notifySearchEngines(newPost).catch(() => {});
 
         return res.status(HTTP_STATUS_CODES.CREATED).json({
             success: true,
@@ -167,6 +193,8 @@ export const updatePost = async (req, res) => {
         }
 
         await postExists.save()
+
+        notifySearchEngines(postExists).catch(() => {});
 
         return res.status(HTTP_STATUS_CODES.OK).json({ success: true, message: MESSAGES.SUCCESS.POST_UPDATED, data: postExists })
     } catch (error) {

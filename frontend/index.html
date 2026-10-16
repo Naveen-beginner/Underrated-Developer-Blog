@@ -12,8 +12,59 @@
     <meta name="author" content="Naveen, Santhosh Paul">
 
     <!-- SEO & Indexing -->
-    <meta name="robots" content="index, follow">
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
     <link rel="canonical" href="https://underrateddev.com/">
+
+    <!-- Schema.org WebSite & Organization Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://underrateddev.com/#website",
+          "url": "https://underrateddev.com/",
+          "name": "Underrated Developer",
+          "description": "Personal engineering blog of Team 4FrndTech Founders Naveen & Santhosh Paul. Deep dives on Flutter desktop, Dart internals, Play Store publishing, and autonomous AI systems.",
+          "publisher": {
+            "@id": "https://underrateddev.com/#organization"
+          },
+          "potentialAction": [
+            {
+              "@type": "SearchAction",
+              "target": {
+                "@type": "EntryPoint",
+                "urlTemplate": "https://underrateddev.com/blog?search={search_term_string}"
+              },
+              "query-input": "required name=search_term_string"
+            }
+          ]
+        },
+        {
+          "@type": "Organization",
+          "@id": "https://underrateddev.com/#organization",
+          "name": "Underrated Developer",
+          "url": "https://underrateddev.com/",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://underrateddev.com/assets/favicons/official_logo_branding_transparent.png"
+          },
+          "founders": [
+            {
+              "@type": "Person",
+              "name": "Naveen Chandra Kowshik",
+              "url": "https://underrateddev.com/author"
+            },
+            {
+              "@type": "Person",
+              "name": "Santhosh Paul",
+              "url": "https://underrateddev.com/author"
+            }
+          ]
+        }
+      ]
+    }
+    </script>
 
     <!-- Favicon (TUD Mark) -->
     <link rel="icon" type="image/png" sizes="32x32" href="assets/favicons/authors-og-image.png">
@@ -177,7 +228,7 @@
                             <a href="/blog?tag=App+Publishing" class="topic-chip">Play Console</a>
                             <a href="/blog?tag=AI+%26+Agents" class="topic-chip">AI Agents & SDKs</a>
                             <a href="/blog?tag=Desktop" class="topic-chip">Desktop & FFI</a>
-                            <a href="/blog?tag=GDE" class="topic-chip">GDE Road</a>
+                            <a href="/blog?tag=System+Architecture" class="topic-chip">Architecture</a>
                         </div>
                     </div>
                 </aside>
@@ -210,7 +261,7 @@
                         Most programming content online stays on the surface: basic CRUD apps, copy-pasting packages, and generic tutorials. But true engineering begins where tutorials end—when you run into isolate concurrency traps in Flutter, when your app gets rejected during the 14-day closed test on the Play Console, or when you compile Dart straight to native Win32 binaries.
                     </p>
                     <p>
-                        This blog is our commitment to contributing deep, battle-tested knowledge back to the global developer community on the path to becoming <strong>Google Developer Experts (GDE)</strong>.
+                        This blog is our commitment to contributing deep, battle-tested knowledge back to the global developer community with uncompromising engineering excellence and real-world system clarity.
                     </p>
                 </div>
             </div>
